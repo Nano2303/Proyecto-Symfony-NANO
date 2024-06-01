@@ -49,7 +49,9 @@ class CategoriasController extends AbstractController
         SessionInterface $session
     ): Response
     {
-      
+        if(!$session->isStarted()){
+            return new JsonResponse(['error' => 'Aun no has iniciado sesion'], Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED);
+        }
 
       // Obtener el correo electrónico almacenado en la sesión
           $admin_email = $session->get('user_email');
