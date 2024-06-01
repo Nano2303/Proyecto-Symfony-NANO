@@ -13,9 +13,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\EmailService;
 
 class SecurityController extends AbstractController
 {
+    private $usuariosRepository;
+    private $passwordHasher;
+    private $emailService;
+    public function __construct(
+        UsuariosRepository $usuariosRepository,
+        UserPasswordHasherInterface $passwordHasher,
+        EmailService $emailService
+    ){
+
+        $this->usuariosRepository = $usuariosRepository;
+        $this->passwordHasher = $passwordHasher;
+        $this->emailService = $emailService;
+    }
 
 
 
@@ -30,8 +44,6 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'login')]
     public function login(
         Request $request,
-        UsuariosRepository $usuariosRepository,
-        UserPasswordHasherInterface $passwordHasher,
         SessionInterface $session
         
     ): Response {
@@ -46,13 +58,13 @@ class SecurityController extends AbstractController
             return new JsonResponse(['error' => 'Correo electrónico o contraseña no proporcionados'], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = $usuariosRepository->findOneByEmail($email);
+        $user = $this->usuariosRepository->findOneByEmail($email);
 
         if (!$user) {
             return new JsonResponse(['error' => 'Usuario no encontrado'], Response::HTTP_NOT_FOUND);
         }
 
-        if (!$passwordHasher->isPasswordValid($user, $password)) {
+        if (!$this->passwordHasher->isPasswordValid($user, $password)) {
             return new JsonResponse(['error' => 'Contraseña incorrecta'], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -69,6 +81,39 @@ class SecurityController extends AbstractController
             return new JsonResponse(['redirect_to' => 'user_profile'], Response::HTTP_OK);
         }
     }
+
+
+    #[Route('/recuperar-contrasena', name: 'recuperar_contrasena')]
+    public function recuperarContrasena(Request$request, SessionInterface $session):Response{
+
+        if($session->isStarted()){
+            return new JsonResponse(['Mensaje'=>'Ya tienes sesion iniciada, te enviare al home.']);
+            ; //Para que si retornea true me mande para el home directamente
+        }
+
+        $data = json_decode($request->getContent(),true);
+
+        $usuario_email = $data['email'];
+
+        if(!$usuario_email){
+            return new JsonResponse(['Error'=>'El campo del usuario no ha sido proporcionado']);
+        }
+
+        $usuario = $this->usuariosRepository->findOneByEmail($usuario_email);
+
+        if(!$usuario){
+            return new JsonResponse(['Error'=>'Usuario no encontrado']);
+        }
+
+        $codigo_enviado = $this->emailService->enviarCodigoRecuperarContrasena($usuario_email);
+
+         if ($codigo_enviado) {
+            return new JsonResponse(['Mensaje' => 'Código de recuperación enviado correctamente'], Response::HTTP_OK);
+        } else {
+            return new JsonResponse(['Mensaje' => 'No se pudo enviar el código de recuperación en este momento. Por favor, inténtalo de nuevo más tarde.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
 
 

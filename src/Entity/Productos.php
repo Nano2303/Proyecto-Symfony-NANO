@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ProductosRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductosRepository::class)]
@@ -48,6 +49,9 @@ class Productos
     #[ORM\ManyToOne(inversedBy: 'productos')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Categorias $categorias = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $src = null;
 
     public function __construct()
     {
@@ -200,6 +204,18 @@ class Productos
     public function setCategorias(?Categorias $categorias): static
     {
         $this->categorias = $categorias;
+
+        return $this;
+    }
+
+    public function getSrc(): ?string
+    {
+        return $this->src;
+    }
+
+    public function setSrc(string $src): static
+    {
+        $this->src = $src;
 
         return $this;
     }

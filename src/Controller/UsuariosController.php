@@ -48,6 +48,11 @@ class UsuariosController extends AbstractController
         SessionInterface $session,
         Request $request,
     ): Response {
+
+        if(!$session->isStarted()){
+            return new JsonResponse(['error' => 'Aun no has iniciado sesion'], Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED);
+        }
+
         $admin_email = $session->get('user_email');
         
         if (!$this->verificarRol->isAdmin($admin_email)) {
@@ -61,7 +66,14 @@ class UsuariosController extends AbstractController
         return $this->usuariosServices->deleteUser($admin_email, $email_usuario);
     }
 
+    #[Route('/logout', name: 'logout')]
+    public function logout (SessionInterface $session):Response
+    {
+        $email = $session->get('user_email');
+        $session->invalidate(); 
+        return new JsonResponse(['Mensaje' => 'Sesion cerrada, hast la proxima '.$email], Response::HTTP_OK); 
 
+    }
    
     
 }
