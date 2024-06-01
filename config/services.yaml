@@ -29,6 +29,9 @@ services:
             $usuariosRepository: '@App\Repository\UsuariosRepository'
             $entityManager: '@doctrine.orm.entity_manager' # Inyecta el EntityManagerInterface
 
-
+    App\Service\UsuariosServices:
+        arguments:
+            $usuariosRepository: '@App\Repository\UsuariosRepository'
+            $entityManager: '@doctrine.orm.entity_manager'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

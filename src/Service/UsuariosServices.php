@@ -3,8 +3,10 @@ namespace App\Service;
 
 use App\Repository\UsuariosRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class UserService
+class UsuariosServices
 {
     private $usuariosRepository;
     private $entityManager;
@@ -15,25 +17,22 @@ class UserService
         $this->entityManager = $entityManager;
     }
 
-    public function deleteUser($adminEmail, $emailUsuario)
+    public function deleteUser($adminEmail, $email_usuario):Response
     {
-        // Verificar si el usuario en la sesión tiene el rol de administrador
-        $admin = $this->usuariosRepository->findOneByEmail($adminEmail);
-        if (!in_array('ROLE_ADMIN', $admin->getRoles())) {
-            return ['error' => 'No sos administrador'];
+        if (!$email_usuario) {
+            return new JsonResponse(['error' => 'El campo email es necesario'], Response::HTTP_NOT_ACCEPTABLE);
+        }
+        $user = $this->usuariosRepository->findOneByEmail($email_usuario);
+
+        if(!$user){
+            return new JsonResponse(['error' => 'Usuario no encontrado'], Response::HTTP_NOT_FOUND);
         }
 
-        // Buscar el usuario por su correo electrónico
-        $user = $this->usuariosRepository->findOneByEmail($emailUsuario);
-        if (!$user) {
-            return ['error' => 'Usuario no encontrado'];
-        }
 
-        // Eliminar el usuario
         $this->entityManager->remove($user);
         $this->entityManager->flush();
-
-        return ['message' => 'Usuario eliminado correctamente'];
+    
+        return new JsonResponse(['message' => 'Usuario eliminado correctamente'], Response::HTTP_OK);
     }
 
 

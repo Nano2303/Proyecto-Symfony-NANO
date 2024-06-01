@@ -11,9 +11,28 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\VerificarRol;
+use App\Service\UsuariosServices;
+
 
 class UsuariosController extends AbstractController
 {
+    private $verificarRol;
+    private $session;
+    private $entityManager;
+    private $usuariosServices;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        VerificarRol $verificarRol,
+        UsuariosServices $usuariosServices
+    ) {
+        $this->entityManager = $entityManager;
+        $this->verificarRol = $verificarRol;
+        $this->usuariosServices = $usuariosServices;
+    }
+
+
     #[Route('/usuarios', name: 'app_usuarios',methods: ['DELETE'])]
     public function index(): Response
     {
@@ -27,43 +46,19 @@ class UsuariosController extends AbstractController
     #[Route('/delete-user', name: 'delete_user')]
     public function deleteUser(
         SessionInterface $session,
-        UsuariosRepository $usuariosRepository,
         Request $request,
-        EntityManagerInterface $entityManager
     ): Response {
-
-
-        // Obtener el correo electrónico almacenado en la sesión
         $admin_email = $session->get('user_email');
-
-        $admin = $usuariosRepository->findOneByEmail($admin_email);
-
-        // Verificar si el usuario en la sesión tiene el rol de administrador
-        if (!in_array('ROLE_ADMIN',$admin->getRoles())) {
-            // lo enviaria al home con su usuario normal
+        
+        if (!$this->verificarRol->isAdmin($admin_email)) {
             return new JsonResponse(['error' => 'No sos administrador'], Response::HTTP_NOT_FOUND); //pa que se salga directamente de aca
         }
-        
+
         $data = json_decode($request->getContent(),true);
 
-
-        
         $email_usuario =$data['email'] ?? null;
-        if (!$email_usuario) {
-            return new JsonResponse(['error' => 'El campo email es necesario'], Response::HTTP_NOT_ACCEPTABLE);
-        }
-        $user = $usuariosRepository->findOneByEmail($email_usuario);
-
-        if(!$user){
-            return new JsonResponse(['error' => 'Usuario no encontrado'], Response::HTTP_NOT_FOUND);
-        }
-
-
-        $entityManager->remove($user);
-        $entityManager->flush();
-    
-        return new JsonResponse(['message' => 'Usuario eliminado correctamente'], Response::HTTP_OK);
-    
+       
+        return $this->usuariosServices->deleteUser($admin_email, $email_usuario);
     }
 
 
