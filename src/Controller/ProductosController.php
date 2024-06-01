@@ -12,21 +12,32 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\VerificarRol;
+use App\Service\ProductosService;
 
 class ProductosController extends AbstractController
 {
-    private $categoriasRepository;
+    private $verificarRol;
+    private $session;
     private $usuariosRepository;
     private $entityManager;
+    private $categoriaRepository;
+    private $productosService;
 
     public function __construct(
         UsuariosRepository $usuariosRepository,
         EntityManagerInterface $entityManager,
-        CategoriasRepository $categoriasRepository
+        VerificarRol $verificarRol,
+        CategoriasRepository $categoriaRepository,
+        ProductosService $productosService
     ) {
         $this->usuariosRepository = $usuariosRepository;
         $this->entityManager = $entityManager;
-        $this->categoriasRepository = $categoriasRepository;
+        $this->verificarRol = $verificarRol;
+        $this->categoriaRepository = $categoriaRepository;
+        $this->productosService = $productosService;
+        
+
     }
 
     #[Route('/productos', name: 'app_productos')]
@@ -43,55 +54,21 @@ class ProductosController extends AbstractController
         Request $request,
         SessionInterface $session
     ): Response {
-        // Obtener el correo electrónico almacenado en la sesión
+
+        if(!$session->isStarted()){
+            return new JsonResponse(['error' => 'Aun no has iniciado sesion'], Response::HTTP_NOT_FOUND);
+        }
         $admin_email = $session->get('user_email');
 
-        $admin = $this->usuariosRepository->findOneByEmail($admin_email);
-
-        // Verificar si el usuario en la sesión tiene el rol de administrador
-        if (!in_array('ROLE_ADMIN', $admin->getRoles())) {
-            // lo enviaria al home con su usuario normal
+        if (!$this->verificarRol->isAdmin($admin_email)) {
             return new JsonResponse(['error' => 'No sos administrador'], Response::HTTP_NOT_FOUND); //pa que se salga directamente de aca
         }
-        $data = json_decode($request->getContent(), true);
 
-        $categoria_id = $data['categoria_id'] ?? null;
-
-        if(!$categoria_id){
-            return new JsonResponse(['error' => 'Todos los campos son obligatorios'], Response::HTTP_BAD_REQUEST);
-        }
-
-        $categoria = $this->categoriasRepository->find($categoria_id);
-        
-        if(!$categoria){
-            return new JsonResponse(['error' => 'No existe esta categoria'], Response::HTTP_NOT_FOUND);
-        }
-        
-        $nombre = $data['nombre'] ?? null;
-        $descripcion = $data['descripcion'] ?? null;
-        $precio = $data['precio'] ?? null;
-        $talla = $data['talla'] ?? null;
-        $color = $data['color'] ?? null;
-        $cantidad_inventario = $data['cantidad_inventario'] ?? null;
-
-        if (!$nombre || !$descripcion || !$precio || !$talla || !$color || !$cantidad_inventario) {
-            return new JsonResponse(['error' => 'Todos los campos son obligatorios'], Response::HTTP_BAD_REQUEST);
-        }
-        
-        $producto = new Productos();
-        $producto->setCategorias($categoria);
-        $producto->setNombre($nombre);
-        $producto->setDescripcion($descripcion);
-        $producto->setPrecio($precio);
-        $producto->setTalla($talla);
-        $producto->setColor($color);
-        $producto->setCantidadInventario($cantidad_inventario);
-
-        $this->entityManager->persist($producto);
-        $this->entityManager->flush();
-
-        return new JsonResponse(['message' => 'Producto creado correctamente'], Response::HTTP_CREATED);
+        return $this->productosService->crearProducto($request);
     }
 }
+
+
+
 
 

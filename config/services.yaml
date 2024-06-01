@@ -20,5 +20,15 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\Service\VerificarRol:
+        arguments:
+            $usuariosRepository: '@App\Repository\UsuariosRepository'
+
+    App\Service\CategoriasService:
+        arguments:
+            $usuariosRepository: '@App\Repository\UsuariosRepository'
+            $entityManager: '@doctrine.orm.entity_manager' # Inyecta el EntityManagerInterface
+
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
