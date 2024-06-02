@@ -33,13 +33,11 @@ class RegistrationController extends AbstractController
         ValidatorInterface $validator
     ): JsonResponse {
 
-        // Deserialize JSON request body into User and Direcciones objects
         $data = json_decode($request->getContent(), true);
 
-        // Deserialize User object
+
         $user = $serializer->deserialize(json_encode($data['usuario']), Usuarios::class, 'json');
 
-        // Deserialize Direcciones object
         $direccionData = $data['direccion'];
         $direccion = new Direcciones();
         $direccion->setCalle($direccionData['calle']);
@@ -48,7 +46,7 @@ class RegistrationController extends AbstractController
         $direccion->setCodigoPostal($direccionData['codigo_postal']);
         $direccion->setPais($direccionData['pais']);
 
-        // Validate User and Direcciones objects
+        // Validamos direccion
         $errors = $validator->validate($user);
         $errors->addAll($validator->validate($direccion));
         if (count($errors) > 0) {
@@ -63,10 +61,10 @@ class RegistrationController extends AbstractController
             )
         );
 
-        // Associate Direcciones with User
+        // Aprovechamos la funcion adddireciones de la entidad usuario
         $user->addDireccione($direccion);
         $user->setRoles(["ROLE_USER"]);
-        // Save User and Direcciones to the database
+
         $entityManager->persist($user);
         $entityManager->flush();
 

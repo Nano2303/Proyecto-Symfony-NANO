@@ -16,6 +16,11 @@ class CarritoComprasRepository extends ServiceEntityRepository
         parent::__construct($registry, CarritoCompras::class);
     }
 
+    public function findByUserId(int $userId): ?CarritoCompras
+    {
+        return $this->findOneBy(['usuarios' => $userId]);
+    }
+
     //    /**
     //     * @return CarritoCompras[] Returns an array of CarritoCompras objects
     //     */
