@@ -67,6 +67,19 @@ class UsuariosController extends AbstractController
     }
 
    
+    #[Route('/get-info-actual-user', name: 'get_info_actual_user')]
+    public function getInfoUserActual(SessionInterface $session){
+
+        $email_usuario = $session->get('user_email');
+        
+        if(!$email_usuario){
+            return new JsonResponse(['error' => 'Aun no has iniciado sesion'], Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED);
+        }
+
+       
+    
+        return $this->usuariosServices->getInfoUserActual($email_usuario);
+    }
    
     
 }
