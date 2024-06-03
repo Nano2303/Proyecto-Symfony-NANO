@@ -40,71 +40,60 @@ class ProductosCarritosService
 
 
     public function agregarProductoCarrito(Request $request, $usuario): Response
-    {
+{
+    $data = json_decode($request->getContent(), true);
 
-        $data = json_decode($request->getContent(), true);
+    $carrito = $this->carritoComprasRepository->findOneBy(['usuarios' => $usuario]);
 
-        $carrito_por_user_id = $this->carritoComprasRepository->findByUserId($usuario->getId());
+    $productos_id = $data['productos_id'] ?? null;
+    $cantidad = $data['cantidad'] ?? null; //Entero todos
 
-
-        $productos_id = $data['productos_id'] ?? null;
-        $cantidad = $data['cantidad'] ?? null; //Entero todos
-
-        if (!$productos_id || !$cantidad) {
-            return new JsonResponse(['error' => 'Tienes que proporcionar todos los datos '], Response::HTTP_NOT_IMPLEMENTED);
-        }
-        if (!$carrito_por_user_id) {
-            $carrito = new CarritoCompras();
-            $carrito->setUsuarios($usuario);
-        }else {
-            $carrito = $this->carritoComprasRepository->find($carrito_por_user_id);
-        }
-
-        $producto = $this->productosRepository->find($productos_id);
-
-        if (!$producto) {
-            return new JsonResponse(['error' => 'No se ha encontrado este producto'], Response::HTTP_NOT_FOUND);
-        }else if ($producto->getCantidadInventario()<$cantidad){
-            return new JsonResponse(['error' => 'No hay cantidad suficiente'], Response::HTTP_NOT_ACCEPTABLE);
-        }
-        
-
-        $productosCarritoExistente = $this->productosCarritoRepository->findOneBy([
-            'carritoCompras' => $carrito,
-            'productos' => $producto
-        ]);
-
-        if ($productosCarritoExistente) {
-            // Si el producto ya existe en el carrito, actualiza la cantidad
-            $productosCarritoExistente->setCantidad($productosCarritoExistente->getCantidad() + $cantidad);
-
-            $total = $producto->getPrecio() * $cantidad;
-
-            $carrito->setTotal($carrito->getTotal() + $total);
-        } else {
-            // Si el producto no existe en el carrito, crea uno nuevo
-            $carritoCompras  = new ProductosCarrito();
-            $carritoCompras->setCarritoCompras($carrito);
-            $carritoCompras->setProductos($producto);
-            $carritoCompras->setCantidad($cantidad);
-            $this->entityManager->persist($carritoCompras);
-
-            $total = $producto->getPrecio() * $cantidad;
-
-            $carrito->setTotal($carrito->getTotal() + $total);
-
-            $this->entityManager->persist($carritoCompras);
-        }
-
-        $producto->setCantidadInventario($producto->getCantidadInventario() - $cantidad);
-
-        $this->entityManager->persist($producto);
-        $this->entityManager->persist($carrito);
-        $this->entityManager->flush();
-
-        return new JsonResponse(['Mensaje' => 'Pedido agregado al carrito con exito'], Response::HTTP_OK);
-
+    if (!$productos_id || !$cantidad) {
+        return new JsonResponse(['error' => 'Tienes que proporcionar todos los datos '], Response::HTTP_BAD_REQUEST);
     }
+
+    if (!$carrito) {
+        $carrito = new CarritoCompras();
+        $carrito->setUsuarios($usuario);
+        $carrito->setTotal(0);
+        $this->entityManager->persist($carrito);
+    }
+
+    $producto = $this->productosRepository->find($productos_id);
+
+    if (!$producto) {
+        return new JsonResponse(['error' => 'No se ha encontrado este producto'], Response::HTTP_NOT_FOUND);
+    } else if ($producto->getCantidadInventario() < $cantidad) {
+        return new JsonResponse(['error' => 'No hay cantidad suficiente'], Response::HTTP_NOT_ACCEPTABLE);
+    }
+
+    $productosCarritoExistente = $this->productosCarritoRepository->findOneBy([
+        'carritoCompras' => $carrito,
+        'productos' => $producto
+    ]);
+
+    if ($productosCarritoExistente) {
+        // Si el producto ya existe en el carrito, actualiza la cantidad
+        $productosCarritoExistente->setCantidad($productosCarritoExistente->getCantidad() + $cantidad);
+    } else {
+        // Si el producto no existe en el carrito, crea uno nuevo
+        $productosCarritoExistente = new ProductosCarrito();
+        $productosCarritoExistente->setCarritoCompras($carrito);
+        $productosCarritoExistente->setProductos($producto);
+        $productosCarritoExistente->setCantidad($cantidad);
+        $this->entityManager->persist($productosCarritoExistente);
+    }
+
+    $producto->setCantidadInventario($producto->getCantidadInventario() - $cantidad);
+    $total = $producto->getPrecio() * $cantidad;
+    $carrito->setTotal($carrito->getTotal() + $total);
+
+    $this->entityManager->persist($producto);
+    $this->entityManager->persist($carrito);
+    $this->entityManager->flush();
+
+    return new JsonResponse(['Mensaje' => 'Producto agregado al carrito con éxito'], Response::HTTP_OK);
+}
 
 
     public function borrarProductoCarrito(Request $request, $usuario): JsonResponse
