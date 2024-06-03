@@ -70,6 +70,24 @@ class ProductosCarritosController extends AbstractController
         return $this->productosCarritosService->agregarProductoCarrito($request,$usuario);
         
     }
+
+    #[Route('/carrito/borrar-producto', name: 'carrito_borrar_producto', methods: ['POST'])]
+    public function borrarProductoCarrito(Request $request, Session $session): Response
+    {
+        if (!$session->has('user_email')) {
+            return new JsonResponse(['error' => 'Aún no has iniciado sesión'], Response::HTTP_UNAUTHORIZED);
+        }
+    
+        $usuario = $this->usuariosRepository->findOneByEmail($session->get('user_email'));
+    
+        if (!$usuario) {
+            return new JsonResponse(['error' => 'Usuario no encontrado'], Response::HTTP_NOT_FOUND);
+        }
+    
+        return $this->productosCarritosService->borrarProductoCarrito($request, $usuario);
+    
+    }
+
 }
 /**
  */

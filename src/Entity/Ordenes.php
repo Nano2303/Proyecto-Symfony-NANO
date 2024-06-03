@@ -38,6 +38,9 @@ class Ordenes
     #[ORM\JoinColumn(nullable: false)]
     private ?Pagos $pagos = null;
 
+    #[ORM\Column(length: 10)]
+    private ?string $estado = null;
+
     public function __construct()
     {
         $this->detalles_orden = new ArrayCollection();
@@ -134,6 +137,18 @@ class Ordenes
     public function setPagos(Pagos $pagos): static
     {
         $this->pagos = $pagos;
+
+        return $this;
+    }
+
+    public function getEstado(): ?string
+    {
+        return $this->estado;
+    }
+
+    public function setEstado(string $estado): static
+    {
+        $this->estado = $estado;
 
         return $this;
     }

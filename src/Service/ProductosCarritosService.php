@@ -107,7 +107,54 @@ class ProductosCarritosService
     }
 
 
+    public function borrarProductoCarrito(Request $request, $usuario): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
 
+        $carrito_por_user_id = $this->carritoComprasRepository->findByUserId($usuario->getId());
+        $productos_id = $data['productos_id'] ?? null;
+    
+        if (!$productos_id) {
+            return new JsonResponse(['error' => 'ID del producto no proporcionado'], Response::HTTP_BAD_REQUEST);
+        }
+    
+        if (!$carrito_por_user_id) {
+            return new JsonResponse(['error' => 'Carrito no encontrado para el usuario'], Response::HTTP_NOT_FOUND);
+        } else {
+            $carrito = $this->carritoComprasRepository->find($carrito_por_user_id);
+        }
+    
+        $producto = $this->productosRepository->find($productos_id);
+    
+        if (!$producto) {
+            return new JsonResponse(['error' => 'Producto no encontrado'], Response::HTTP_NOT_FOUND);
+        }
+    
+        $productoCarrito = $this->productosCarritoRepository->findOneBy([
+            'carritoCompras' => $carrito,
+            'productos' => $producto
+        ]);
+    
+        if (!$productoCarrito) {
+            return new JsonResponse(['error' => 'Producto no encontrado en el carrito'], Response::HTTP_NOT_FOUND);
+        }
+    
+        // Eliminar el producto del carrito
+        $cantidad = $productoCarrito->getCantidad();
+        $total = $producto->getPrecio() * $cantidad;
+    
+        $this->entityManager->remove($productoCarrito);
+        $carrito->setTotal($carrito->getTotal() - $total);
+    
+        // Actualizar la cantidad de inventario del producto
+        $producto->setCantidadInventario($producto->getCantidadInventario() + $cantidad);
+    
+        $this->entityManager->persist($producto);
+        $this->entityManager->persist($carrito);
+        $this->entityManager->flush();
+    
+        return new JsonResponse(['Mensaje' => 'Producto eliminado del carrito con éxito'], Response::HTTP_OK);
+    }
 
 
 
