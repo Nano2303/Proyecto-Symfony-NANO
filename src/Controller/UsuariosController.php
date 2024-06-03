@@ -66,13 +66,19 @@ class UsuariosController extends AbstractController
         return $this->usuariosServices->deleteUser($admin_email, $email_usuario);
     }
 
-    #[Route('/logout', name: 'logout')]
-    public function logout (SessionInterface $session):Response
-    {
-        $email = $session->get('user_email');
-        $session->invalidate(); 
-        return new JsonResponse(['Mensaje' => 'Sesion cerrada, hast la proxima '.$email], Response::HTTP_OK); 
+   
+    #[Route('/get-info-actual-user', name: 'get_info_actual_user')]
+    public function getInfoUserActual(SessionInterface $session){
 
+        $email_usuario = $session->get('user_email');
+        
+        if(!$email_usuario){
+            return new JsonResponse(['error' => 'Aun no has iniciado sesion'], Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED);
+        }
+
+       
+    
+        return $this->usuariosServices->getInfoUserActual($email_usuario);
     }
    
     

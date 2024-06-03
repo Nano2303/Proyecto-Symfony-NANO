@@ -20,15 +20,19 @@ class SecurityController extends AbstractController
     private $usuariosRepository;
     private $passwordHasher;
     private $emailService;
+    private $entityManager;
+
     public function __construct(
         UsuariosRepository $usuariosRepository,
         UserPasswordHasherInterface $passwordHasher,
-        EmailService $emailService
-    ){
+        EmailService $emailService,
+        EntityManagerInterface $entityManager
+    ) {
 
         $this->usuariosRepository = $usuariosRepository;
         $this->passwordHasher = $passwordHasher;
         $this->emailService = $emailService;
+        $this->entityManager = $entityManager;
     }
 
 
@@ -45,7 +49,7 @@ class SecurityController extends AbstractController
     public function login(
         Request $request,
         SessionInterface $session
-        
+
     ): Response {
 
         // Decodifica el JSPON
@@ -83,37 +87,85 @@ class SecurityController extends AbstractController
     }
 
 
-    #[Route('/recuperar-contrasena', name: 'recuperar_contrasena')]
-    public function recuperarContrasena(Request$request, SessionInterface $session):Response{
+    #[Route('/enviar-codigo', name: 'enviar_codigo')]
+    public function enviarCodigoRecuperarContrasena(Request $request, SessionInterface $session): Response
+    {
 
-        if($session->isStarted()){
-            return new JsonResponse(['Mensaje'=>'Ya tienes sesion iniciada, te enviare al home.']);
-            ; //Para que si retornea true me mande para el home directamente
+        if ($session->isStarted()) {
+            return new JsonResponse(['Mensaje' => 'Ya tienes sesion iniciada, te enviare al home.']);; //Para que si retornea true me mande para el home directamente
         }
 
-        $data = json_decode($request->getContent(),true);
+        $data = json_decode($request->getContent(), true);
 
         $usuario_email = $data['email'];
 
-        if(!$usuario_email){
-            return new JsonResponse(['Error'=>'El campo del usuario no ha sido proporcionado']);
+        if (!$usuario_email) {
+            return new JsonResponse(['Error' => 'El campo del usuario no ha sido proporcionado']);
         }
 
         $usuario = $this->usuariosRepository->findOneByEmail($usuario_email);
 
-        if(!$usuario){
-            return new JsonResponse(['Error'=>'Usuario no encontrado']);
+        if (!$usuario) {
+            return new JsonResponse(['Error' => 'Usuario no encontrado']);
         }
-
-        $codigo_enviado = $this->emailService->enviarCodigoRecuperarContrasena($usuario_email);
-
-         if ($codigo_enviado) {
+        $session->set('codigo_recuperacion', $this->emailService->enviarCodigoRecuperarContrasena($usuario_email));
+        $session->set('email_recuperacion', $usuario_email);
+        if ($session) {
             return new JsonResponse(['Mensaje' => 'Código de recuperación enviado correctamente'], Response::HTTP_OK);
         } else {
             return new JsonResponse(['Mensaje' => 'No se pudo enviar el código de recuperación en este momento. Por favor, inténtalo de nuevo más tarde.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
+    #[Route('/recuperar-contrasena', name: 'recuperar_contraseña', methods: ['POST'])]
+    public function recuperarContrasena(Request $request, SessionInterface $session): Response
+    {
+        if ($session->has('user_email')) {
+            return new JsonResponse(['Mensaje' => 'Ya tienes sesion iniciada, te enviare al home.']);; //Para que si retornea true me mande para el home directamente
+        }
+
+        if (!$session->get('codigo_recuperacion') || $session->get('email_recuperacion')) {
+            //redirige a login
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $codigo_ingresado = $data['codigo'] ?? null;
+        $nueva_contrasena = $data['nueva_contrasena'] ?? null;
+
+        if (!$codigo_ingresado || !$nueva_contrasena) {
+            return new JsonResponse(['Error' => 'Faltan campos obligatorios.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($codigo_ingresado !== ((string) $session->get('codigo_recuperacion'))) {
+            return new JsonResponse(['Error' => 'Código de recuperación incorrecto.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Lógica para actualizar la contraseña del usuario
+        $email_recuperacion = $session->get('email_recuperacion');
+        $usuario = $this->usuariosRepository->findOneByEmail($email_recuperacion);
+
+        if (!$usuario) {
+            return new JsonResponse(['Error' => 'Usuario no encontrado.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $usuario->setPassword(password_hash($nueva_contrasena, PASSWORD_BCRYPT));
+        $this->entityManager->persist($usuario);
+        $this->entityManager->flush();
+
+        $session->remove('codigo_recuperacion');
+        $session->remove('email_recuperacion');
+
+        return new JsonResponse(['Mensaje' => 'Contraseña actualizada correctamente.'], Response::HTTP_OK);
+    }
+
+    #[Route('/logout', name: 'logout')]
+    public function logout (SessionInterface $session):Response
+    {
+        $email = $session->get('user_email');
+        $session->invalidate(); 
+        return new JsonResponse(['Mensaje' => 'Sesion cerrada, hasta la proxima '.$email], Response::HTTP_OK); 
+
+    }
 }
 
 

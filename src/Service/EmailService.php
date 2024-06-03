@@ -38,9 +38,10 @@ class EmailService
         return mt_rand(100000, 999999);
     }
 
-    public function enviarCodigoRecuperarContrasena($usuario_email): bool
+    public function enviarCodigoRecuperarContrasena($usuario_email): int
     {
         var_dump($usuario_email);
+        $codigo_recuperacion =$this->generarCodigoRecuperacion();
 
         $mail = new PHPMailer(true);
 
@@ -61,15 +62,14 @@ class EmailService
             // Contenido del correo electrónico
             $mail->isHTML(true);
             $mail->Subject = 'Recuperación de contraseña';
-            $mail->Body    = 'Aquí va el codigo de recuperacion de contraseña: '.$this->generarCodigoRecuperacion();
+            $mail->Body    = 'Aquí va el codigo de recuperacion de contraseña: '.$codigo_recuperacion;
     
             // Enviar el correo electrónico
             $mail->send();
-            return true;
+            return $codigo_recuperacion;
         } catch (Exception $e) {
             // Si hay algún error, puedes manejarlo aquí
             echo "Error al enviar el correo electrónico: {$mail->ErrorInfo}";
-            return false;
         }
         
     }

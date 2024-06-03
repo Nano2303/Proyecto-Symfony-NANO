@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response; // Agrega esta línea para import
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UsuariosRepository;
 use App\Entity\Categorias;
+use App\Repository\CategoriasRepository;
 
 class CategoriasService{
 
@@ -15,13 +16,17 @@ class CategoriasService{
 
  private $entityManager;
  private $usuariosRepository;
-
+ private $categoriaRepository;
+ 
     public function __construct(
         UsuariosRepository $usuariosRepository,
-        EntityManagerInterface $entityManager)
+        EntityManagerInterface $entityManager,
+        CategoriasRepository $categoriaRepository
+        )
     {
         $this->entityManager = $entityManager;
         $this->usuariosRepository = $usuariosRepository;
+        $this->categoriaRepository = $categoriaRepository;
 
     }
 
@@ -47,6 +52,41 @@ class CategoriasService{
     }
 
 
+    public function getProductosCategoria(Request $request):JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $id_categoria = $data['id'] ?? null;
+
+        if (!$id_categoria) {
+            return new JsonResponse(['error' => 'Campo id necesario'], Response::HTTP_NO_CONTENT);
+        }
+
+        $categoria = $this->categoriaRepository->find($id_categoria);
+
+        if (!$categoria) {
+            return new JsonResponse(['error' => 'No se ha encontrado ninguna categoria con ese id'], Response::HTTP_NOT_FOUND);
+        }
+
+        $productos = $categoria->getProductos();
+
+        foreach ($productos as $producto) {
+            $datosProductos[] = [
+                'id' => $producto->getId(),
+                'categorias_id' => $producto->getCategorias(),
+                'nombre' => $producto->getNombre(),
+                'descripcion' =>$producto->getDescripcion(),
+                'precio'=>$producto->getPrecio(),
+                'talla'=>$producto->getTalla(),
+                'color'=>$producto->getColor(),
+                'cantidad_inventario'=>$producto->getCantidadInventario(),
+                'src'=>$producto->getSrc()
+                // Agrega otras propiedades del producto según sea necesario
+            ];
+        }
+
+        return new JsonResponse(['productos' => $datosProductos]);
+    }
 
 
 }
