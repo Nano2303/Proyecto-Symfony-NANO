@@ -72,6 +72,8 @@ class ProductosService
         return new JsonResponse(['message' => 'Producto creado correctamente'], Response::HTTP_CREATED);
     }
 
+    
+
     public function reponerProductos(Request $request)
     {
 
@@ -102,25 +104,24 @@ class ProductosService
 
     public function getListaProductos()
     {
-        $productos = $this->productosRepository->findAll();
+        $productos = $this->entityManager->getRepository(Productos::class)->findAll();
 
-        // Convertir los objetos de producto en un array asociativo
-        $datosProductos = [];
-        foreach ($productos as $producto) {
-            $datosProductos[] = [
-                'id' => $producto->getId(),
-                'categorias_id' => $producto->getCategorias(),
-                'nombre' => $producto->getNombre(),
-                'descripcion' =>$producto->getDescripcion(),
-                'precio'=>$producto->getPrecio(),
-                'talla'=>$producto->getTalla(),
-                'color'=>$producto->getColor(),
-                'cantidad_inventario'=>$producto->getCantidadInventario(),
-                'src'=>$producto->getSrc()
-                // Agrega otras propiedades del producto según sea necesario
-            ];
-        }
-        return $datosProductos;
+    $listaProductos = [];
+    foreach ($productos as $producto) {
+        $listaProductos[] = [
+            'id' => $producto->getId(),
+            'categorias_id' => $producto->getCategorias() ? $producto->getCategorias()->getId() : null,
+            'nombre' => $producto->getNombre(),
+            'descripcion' => $producto->getDescripcion(),
+            'precio' => $producto->getPrecio(),
+            'talla' => $producto->getTalla(),
+            'color' => $producto->getColor(),
+            'cantidad_inventario' => $producto->getCantidadInventario(),
+            'src' => $producto->getSrc()
+        ];
+    }
+
+    return $listaProductos;
     }
 
 
