@@ -1,0 +1,28 @@
+.texto{
+    color: white;
+}
+
+button{
+    border-radius: 2px;
+    background-color: white;
+    color: black;
+    height: 40px;
+    width: 130px;
+}
+
+.container {
+    align-self: center;
+    display: flex;
+    justify-content: center; /* Alinea horizontalmente el contenido al centro */
+    align-items: center; /* Alinea verticalmente el contenido al centro */
+    height: 80vh; /* Ajusta la altura del contenedor al 100% del viewport */
+}
+
+.formulario {
+    background-color: rgb(97, 96, 96);
+    width: 300px;
+    padding: 20px; /* Añadimos un poco de espacio alrededor del formulario */
+    border-radius: 5px;
+    display: grid;
+    justify-content: center;
+}

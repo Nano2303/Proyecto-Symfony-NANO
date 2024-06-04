@@ -1,0 +1,29 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+html,
+body {
+    height: 100%;
+    background-color: black;
+ margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    background-color: black;
+    overflow: auto; 
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE y Edge */
+}
+
+  html::-webkit-scrollbar, body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari y Opera */
+  }
+
+
+  .ng-valid:not(form).ng-touched {
+    border-right: 3px solid green;
+}
+
+
+.ng-invalid:not(form).ng-touched {
+    border-right: 3px solid red;
+}
