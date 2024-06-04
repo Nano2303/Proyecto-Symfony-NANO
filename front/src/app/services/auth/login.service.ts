@@ -13,8 +13,8 @@ export class LoginService {
 
   constructor(private http: HttpClient) { }
 
-  login(credentials: LoginRequest): Observable<User> {
-    return this.http.post<User>(this.apiUrl, credentials).pipe(
+  login(credentials: LoginRequest): Observable<any> {
+    return this.http.post<any>(this.apiUrl, credentials).pipe(
       catchError(this.handleError)
     );
   }
