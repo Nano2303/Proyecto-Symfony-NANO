@@ -46,7 +46,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     RegisterComponent,
     RecoverPassComponent,
     LoginComponent,
-    DetailsComponent
+    DetailsComponent,
+    RecoverPassComponent
   ],
   imports: [
     BrowserModule,

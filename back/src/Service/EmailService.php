@@ -40,7 +40,7 @@ class EmailService
 
     public function enviarCodigoRecuperarContrasena($usuario_email): int
     {
-        var_dump($usuario_email);
+
         $codigo_recuperacion =$this->generarCodigoRecuperacion();
 
         $mail = new PHPMailer(true);
