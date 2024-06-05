@@ -121,40 +121,52 @@ class SecurityController extends AbstractController
     public function recuperarContrasena(Request $request, SessionInterface $session): Response
     {
         if ($session->has('user_email')) {
-            return new JsonResponse(['Mensaje' => 'Ya tienes sesion iniciada, te enviare al home.']);; //Para que si retornea true me mande para el home directamente
+            return new JsonResponse(['Mensaje' => 'Ya tienes sesión iniciada, te enviaré al home.']); // Para que si retorna true me mande para el home directamente
         }
-
-        if (!$session->get('codigo_recuperacion') || $session->get('email_recuperacion')) {
-            //redirige a login
+    
+        if (!$session->get('codigo_recuperacion') || !$session->get('email_recuperacion')) {
+            return new JsonResponse(['Error' => 'Código de recuperación o email no están presentes en la sesión.']); // Redirige a login
         }
-
+    
+        // Depuración: Mostrar los valores de la sesión
+        $codigo_sesion = $session->get('codigo_recuperacion');
+        $email_sesion = $session->get('email_recuperacion');
+    
+        // Registro de depuración
+        error_log('Código en sesión: ' . $codigo_sesion);
+        error_log('Email en sesión: ' . $email_sesion);
+    
         $data = json_decode($request->getContent(), true);
         $codigo_ingresado = $data['codigo'] ?? null;
         $nueva_contrasena = $data['nueva_contrasena'] ?? null;
-
+    
+        // Registro de depuración
+        error_log('Código ingresado: ' . $codigo_ingresado);
+        error_log('Nueva contraseña: ' . $nueva_contrasena);
+    
         if (!$codigo_ingresado || !$nueva_contrasena) {
             return new JsonResponse(['Error' => 'Faltan campos obligatorios.'], Response::HTTP_BAD_REQUEST);
         }
-
-        if ($codigo_ingresado !== ((string) $session->get('codigo_recuperacion'))) {
+    
+        if ($codigo_ingresado !== ((string) $codigo_sesion)) {
+            error_log('Códigos no coinciden. Código ingresado: ' . $codigo_ingresado . ', Código en sesión: ' . $codigo_sesion);
             return new JsonResponse(['Error' => 'Código de recuperación incorrecto.'], Response::HTTP_BAD_REQUEST);
         }
-
+    
         // Lógica para actualizar la contraseña del usuario
-        $email_recuperacion = $session->get('email_recuperacion');
-        $usuario = $this->usuariosRepository->findOneByEmail($email_recuperacion);
-
+        $usuario = $this->usuariosRepository->findOneByEmail($email_sesion);
+    
         if (!$usuario) {
             return new JsonResponse(['Error' => 'Usuario no encontrado.'], Response::HTTP_NOT_FOUND);
         }
-
+    
         $usuario->setPassword(password_hash($nueva_contrasena, PASSWORD_BCRYPT));
         $this->entityManager->persist($usuario);
         $this->entityManager->flush();
-
+    
         $session->remove('codigo_recuperacion');
         $session->remove('email_recuperacion');
-
+    
         return new JsonResponse(['Mensaje' => 'Contraseña actualizada correctamente.'], Response::HTTP_OK);
     }
 

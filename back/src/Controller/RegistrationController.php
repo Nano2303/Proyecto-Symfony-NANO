@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Direcciones;
 use App\Entity\Usuarios;
+use App\Repository\UsuariosRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,12 +31,20 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        UsuariosRepository $usuariosRepository
     ): JsonResponse {
 
         $data = json_decode($request->getContent(), true);
 
+        $email = $data['usuario']['email'];
+        $user = $usuariosRepository->findOneByEmail($email);
 
+        if ($user){
+            return $this->json(['errors' => "El email ya está registrado en la base de datos"], Response::HTTP_CONFLICT);
+        }
+
+       
         $user = $serializer->deserialize(json_encode($data['usuario']), Usuarios::class, 'json');
 
         $direccionData = $data['direccion'];
