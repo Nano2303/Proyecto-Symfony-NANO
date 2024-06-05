@@ -1,0 +1,50 @@
+@charset "UTF-8";
+#nav-container {
+  display: flex;
+  justify-content: space-between; /* Distribuir espacio entre logo y carrito */
+  align-items: center; /* Centrar los elementos verticalmente */
+  position: relative;
+  height: 100px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  background-color: black;
+}
+
+#logo-wrapper {
+  flex-grow: 1; /* Permite que el contenedor del logo crezca para centrarlo */
+  display: flex;
+  justify-content: center; /* Centra el logo horizontalmente dentro del contenedor */
+}
+
+#logo-home {
+  height: 260px;
+  padding-top: 20px;
+}
+
+#carrito {
+  position: relative;
+  z-index: 1;
+}
+
+/* Media Queries para Diseño Responsivo */
+@media (max-width: 768px) {
+  #nav-container {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+  #logo-wrapper {
+    order: 1; /* Logo primero */
+    margin-bottom: 10px; /* Espacio debajo del logo */
+  }
+  #carrito {
+    order: 2; /* Carrito después del logo */
+    margin-left: 0;
+  }
+}
+@media (max-width: 480px) {
+  #logo-home {
+    width: 100px; /* Reducir tamaño del logo en pantallas más pequeñas */
+    height: auto;
+  }
+}/*# sourceMappingURL=header.component.css.map */
