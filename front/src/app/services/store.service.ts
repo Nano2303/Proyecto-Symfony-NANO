@@ -15,7 +15,7 @@ export class StoreService {
   getAllProducts(): Observable<Array<Product>> {
     return this.httpClient.get<Array<any>>(STORE_BASE_URL).pipe(
       tap((products) => {
-        console.log('Raw products:', products); // Log the raw JSON response
+        //console.log('Raw products:', products); // Log the raw JSON response
       }),
       map((products) => products.map((product) => this.transformProduct(product)))
     );
