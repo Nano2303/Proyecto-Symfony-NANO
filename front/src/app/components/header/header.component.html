@@ -58,8 +58,12 @@
       </div>
     </div>
   </mat-menu>
+
+  <button *ngIf="isLoggedIn" (click)="onLogout()" class="bg-black-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full" style="margin-right: 10px;">
+    Cerrar sesión
+  </button>
   
-  <a href="" routerLink="login">
+  <a href="" routerLink="login" style="margin-right: 5px;">
     <mat-icon class="material-symbols-outlined" 
     [ngStyle]="{'color': 'white'}">
       account_circle
