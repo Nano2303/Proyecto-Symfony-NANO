@@ -12,7 +12,7 @@ export class RecoverPassService {
   constructor(private http: HttpClient) { }
 
   recoverPassword(data: { email: string }): Observable<any> {
-    return this.http.post(this.apiUrl, data,{ withCredentials: true });
+    return this.http.post(this.apiUrl, data);
   }
 
   setNewPassword(data: { codigo: string, nueva_contrasena: string }): Observable<any> {
