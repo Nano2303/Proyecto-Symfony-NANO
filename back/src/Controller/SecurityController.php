@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Service\EmailService;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 
 class SecurityController extends AbstractController
 {
@@ -86,6 +87,19 @@ class SecurityController extends AbstractController
         }
     }
 
+    #[Route('/comprobar-session', name: 'comprobar_session')]
+    public function compruebaSessionYDevuelveElRol(SessionInterface $session){
+
+        if(!$session->has('user_email')){
+            return new JsonResponse(['mensaje' => 'no hay ninguna sesion iniciada'], Response::HTTP_NOT_FOUND);
+        }
+        $email = $session->get('user_email');
+        $user = $this->usuariosRepository->findOneByEmail($email);
+        $rol = $user->getRoles()[0];
+
+     return new JsonResponse(['rol' => $rol], Response::HTTP_OK);
+
+    }
 
     #[Route('/enviar-codigo', name: 'enviar_codigo')]
     public function enviarCodigoRecuperarContrasena(Request $request, SessionInterface $session): Response
