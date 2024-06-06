@@ -29,7 +29,9 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       this.loginService.login(this.loginForm.value as LoginRequest).subscribe({
         next: (response) => {
-          if (response.redirect_to) {
+          if (response.rol) {
+            console.log('Rol del usuario:', response.rol);
+            console.log('Email usuario:', response.email);
             this.router.navigateByUrl('/home');
           } else {
             this.loginError = 'Credenciales inválidas';

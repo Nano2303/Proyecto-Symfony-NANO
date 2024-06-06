@@ -33,6 +33,7 @@ import { RecoverPassComponent } from './pages/recover-pass/recover-pass.componen
 import { LoginComponent } from './pages/login/login.component';
 import { DetailsComponent } from './pages/details/details.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgxPayPalModule } from 'ngx-paypal';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   ],
   imports: [
     BrowserModule,
+    NgxPayPalModule,
     AppRoutingModule,
     MatSidenavModule,
     MatGridListModule,

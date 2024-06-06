@@ -59,15 +59,27 @@
     </div>
   </mat-menu>
 
-  <button *ngIf="isLoggedIn" (click)="onLogout()" class="bg-black-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full" style="margin-right: 10px;">
-    Cerrar sesión
-  </button>
+
+
+ 
   
-  <a href="" routerLink="login" style="margin-right: 5px;">
+  <a routerLink="login" style="margin-right: 5px;">
     <mat-icon class="material-symbols-outlined" 
     [ngStyle]="{'color': 'white'}">
       account_circle
       </mat-icon>
   </a>
-  
+
+  <a *ngIf="estadoSesion" (click)="onLogout()"  style="margin-right: 10px; " title="cerrar sesion">
+    <mat-icon class="material-symbols-outlined" 
+    [ngStyle]="{'color': 'white'}">
+    <svg class="h-6 w-6 text-red-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />  <path d="M7 12h14l-3 -3m0 6l3 -3" /></svg>
+      </mat-icon>
+  </a>
+</div>
+
+<div>
+  <span class="user-name" *ngIf="emailUsuario != ''">
+    {{emailUsuario}}
+  </span>
 </div>

@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { LoginRequest } from './login.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, tap } from 'rxjs';
 import { User } from './user';
 
 @Injectable({
@@ -16,12 +16,25 @@ export class LoginService {
 
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post<any>(this.apiUrl, credentials,{ withCredentials: true }).pipe(
+      tap(response =>{
+
+        if (response.rol && response.email) {
+          localStorage.setItem('user_role', response.rol);
+          localStorage.setItem('user_email', response.email);
+        }
+
+      }),
       catchError(this.handleError)
     );
   }
 
   logout(): Observable<any> {
-    return this.http.post<any>(`${this.URLAPI}/logout`, {}).pipe(
+    return this.http.post<any>(`${this.URLAPI}/logout`, {},{ withCredentials: true }).pipe(
+      tap((response) => {
+        console.log(response);
+        localStorage.removeItem('user_role');
+        localStorage.removeItem('user_email');
+      }),
       catchError(this.handleError)
     );
   }

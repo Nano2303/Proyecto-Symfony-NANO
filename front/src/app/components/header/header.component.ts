@@ -13,10 +13,15 @@ import { HttpClient } from '@angular/common/http';
 export class HeaderComponent implements OnInit {
   private _cart: Cart = { items: [] };
   itemsQuantity = 0;
-  isLoggedIn = false;
+  estadoSesion = false;
+  emailUsuario = '';
+  
 
   @Input()
   get cart(): Cart {
+    this.estadoSesion = this.isLoggedIn();
+    this.emailUsuario = localStorage.getItem('user_email') ?? '';
+    this.emailUsuario = this.emailUsuario.split('@')[0];
     return this._cart;
   }
 
@@ -36,8 +41,7 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('ngOnInit called');
-    this.checkSession();
+  //  console.log('ngOnInit called');
   }
 
   getTotal(items: CartItem[]): number {
@@ -52,7 +56,6 @@ export class HeaderComponent implements OnInit {
     this.loginService.logout().subscribe({
       next: () => {
         this.router.navigate(['/login']);
-        this.isLoggedIn = false;
       },
       error: (error) => {
         console.error('Error al cerrar sesión:', error);
@@ -60,21 +63,13 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  checkSession(): void {
-    console.log('checkSession called');
-    this.http.get<{ rol: string }>('http://localhost:8000/comprobar-session').subscribe({
-      next: (response) => {
-        this.isLoggedIn = true;
-        console.log('Hay una sesion iniciada: ' + this.isLoggedIn);
-      },
-      error: (error) => {
-        if (error.status === 404) {
-          this.isLoggedIn = false;
-          console.log('No hay ninguna sesion iniciada: ' + this.isLoggedIn);
-        } else {
-          console.error('Error comprobando la sesión:', error);
-        }
-      }
-    });
+  isLoggedIn(): boolean {
+    if (localStorage.getItem('user_role') == null){
+      return false
+    }else{
+      return true;
+    }
   }
+
+  
 }

@@ -75,16 +75,11 @@ class SecurityController extends AbstractController
 
         $session->set('user_email', $user->getEmail());
 
-        // Ahora, dependiendo del rol del usuario, redirigirlo a diferentes rutas
-        if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            // Si es administrador, redirigir al panel administrativo
-            // Puedes cambiar 'admin_dashboard' a la ruta real de tu panel administrativo
-            return new JsonResponse(['redirect_to' => 'admin_dashboard'], Response::HTTP_OK);
-        } else {
-            // Si es usuario normal, redirigir al panel de usuario
-            // Puedes cambiar 'user_profile' a la ruta real de tu panel de usuario
-            return new JsonResponse(['redirect_to' => 'user_profile'], Response::HTTP_OK);
-        }
+        $email = $session->get('user_email');
+        $user = $this->usuariosRepository->findOneByEmail($email);
+        $rol = $user->getRoles()[0];
+
+     return new JsonResponse(['rol' => $rol,'email' => $email], Response::HTTP_OK);
     }
 
     #[Route('/comprobar-session', name: 'comprobar_session')]
@@ -97,7 +92,7 @@ class SecurityController extends AbstractController
         $user = $this->usuariosRepository->findOneByEmail($email);
         $rol = $user->getRoles()[0];
 
-     return new JsonResponse(['rol' => $rol], Response::HTTP_OK);
+     return new JsonResponse(['rol' => $rol, 'email' => $email], Response::HTTP_OK);
 
     }
 
