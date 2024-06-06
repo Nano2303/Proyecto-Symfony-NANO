@@ -4,7 +4,7 @@ import { Cart, CartItem } from 'src/app/models/cart.model';
 import { CartService } from 'src/app/services/cart.service';
 import { loadStripe } from '@stripe/stripe-js';
 import { Subscription } from 'rxjs';
-
+import { HttpHeaders } from '@angular/common/http';
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
@@ -53,6 +53,30 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   onCheckout(): void {
+    //primero quiero que me haga la insercion a la api 
+    this.cart.items.forEach(item => {
+      this.http
+        .post('http://localhost:8000/carrito/agregar-producto', {
+          productos_id: item.id,
+          cantidad: item.quantity
+        }, {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json'
+          }),
+          withCredentials: true
+        })
+        .subscribe(
+          response => {
+            console.log('Respuesta del backend:', response);
+          },
+          error => {
+            console.error('Error del backend:', error);
+          }
+        );
+    });
+       
+
+    //luego
     this.http
       .post('http://localhost:4242/checkout', {
         items: this.cart.items,
@@ -62,7 +86,9 @@ export class CartComponent implements OnInit, OnDestroy {
         stripe?.redirectToCheckout({
           sessionId: res.id,
         });
-      });
+        /**
+    */
+  });
   }
 
   ngOnDestroy() {

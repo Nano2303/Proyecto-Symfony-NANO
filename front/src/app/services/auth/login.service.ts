@@ -15,7 +15,7 @@ export class LoginService {
   constructor(private http: HttpClient) { }
 
   login(credentials: LoginRequest): Observable<any> {
-    return this.http.post<any>(this.apiUrl, credentials).pipe(
+    return this.http.post<any>(this.apiUrl, credentials,{ withCredentials: true }).pipe(
       catchError(this.handleError)
     );
   }

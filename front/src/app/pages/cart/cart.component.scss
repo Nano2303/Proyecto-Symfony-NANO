@@ -1,0 +1,14 @@
+$color-fuente: whitesmoke;
+
+.button-container {
+  display: flex;
+  justify-content: flex-end; // Alinea el botón al final del contenedor
+  padding-right: 10px;
+}
+
+button.cardsi {
+  background-color: black;
+  color: $color-fuente;
+}
+
+

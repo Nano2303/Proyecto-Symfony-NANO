@@ -1,34 +1,25 @@
-<a href="" [routerLink]="['/details']">
-  <mat-card *ngIf="product" [ngClass]="{ 'text-center': !fullWidthMode }" class="no-border-card">z
-    <div [ngClass]="{ flex: fullWidthMode }">
+<mat-card *ngIf="product" [ngClass]="{ 'text-center': !fullWidthMode }" class="no-border-card">
+  <div [ngClass]="{ flex: fullWidthMode }">
+    <a (click)="onViewDetails()">
       <img
         class="mb-1 mx-auto"
         [ngClass]="{ 'h-[200px]': !fullWidthMode, 'h-[360px]': fullWidthMode }"
-        src="./assets/img/sudadera1.png"
+        [src]="product.image"
       />
-      <div
-        class="w-full"
-        [ngClass]="{ 'px-8 flex flex-col justify-between': fullWidthMode }"
-      >
-        <div>
-          <h5 class="product-text">{{ product.category }}</h5>
-          <p
-            class="truncate hover:whitespace-normal product-text"
-            [ngClass]="{ truncate: !fullWidthMode }"
-          >
-            {{ product.title }}
-          </p>
-          <p *ngIf="fullWidthMode" class="product-text">
-            {{ product.description }}
-          </p>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-white">{{ product.price | currency }}</span>
-          <button (click)="onAddToCart()">
-            <mat-icon class="text-white">shopping_cart</mat-icon>
-          </button>
-        </div>
+    </a>
+    <div class="w-full" [ngClass]="{ 'px-8 flex flex-col justify-between': fullWidthMode }">
+      <div>
+        <h5 class="product-text">{{ product.category }}</h5>
+        <p class="truncate hover:whitespace-normal product-text" [ngClass]="{ truncate: !fullWidthMode }">
+          {{ product.title }}
+        </p>
+        <p *ngIf="fullWidthMode" class="product-text">
+          {{ product.description }}
+        </p>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-white">{{ product.price | currency }}</span>
       </div>
     </div>
-  </mat-card>
-</a>
+  </div>
+</mat-card>

@@ -15,6 +15,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   cols = 3;
   rowHeight: number = ROWS_HEIGHT[this.cols];
   products: Array<Product> | undefined;
+  categories: Array<string> = [];
   count = '12';
   sort = 'desc';
   category: string | undefined;
@@ -51,10 +52,29 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getProducts(): void {
     this.productsSubscription = this.storeService
-      .getAllProducts(this.count, this.sort, this.category)
+      .getAllProducts()
       .subscribe((_products) => {
-        this.products = _products;
+        this.products = this.filterAndSortProducts(_products);
+        this.categories = this.getCategories(_products);
       });
+  }
+
+  filterAndSortProducts(products: Array<Product>): Array<Product> {
+    let filteredProducts = products;
+    if (this.category) {
+      filteredProducts = filteredProducts.filter(product => product.category === this.category);
+    }
+    if (this.sort === 'desc') {
+      filteredProducts = filteredProducts.sort((a, b) => b.price - a.price);
+    } else {
+      filteredProducts = filteredProducts.sort((a, b) => a.price - b.price);
+    }
+    return filteredProducts.slice(0, parseInt(this.count, 10));
+  }
+
+  getCategories(products: Array<Product>): Array<string> {
+    const categories = products.map(product => product.category);
+    return Array.from(new Set(categories));
   }
 
   onAddToCart(product: Product): void {
