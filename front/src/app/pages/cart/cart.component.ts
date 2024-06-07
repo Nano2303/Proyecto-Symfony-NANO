@@ -2,9 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Cart, CartItem } from 'src/app/models/cart.model';
 import { CartService } from 'src/app/services/cart.service';
-import { loadStripe } from '@stripe/stripe-js';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
+import { ICreateOrderRequest, IPayPalConfig } from 'ngx-paypal';
+
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
@@ -22,14 +23,69 @@ export class CartComponent implements OnInit, OnDestroy {
   ];
   dataSource: CartItem[] = [];
   cartSubscription: Subscription | undefined;
+  public payPalConfig?: IPayPalConfig;
+  estadoSesion = false;
 
-  constructor(private cartService: CartService, private http: HttpClient) {}
+  constructor(private cartService: CartService, private http: HttpClient) { }
 
   ngOnInit(): void {
+    this.estadoSesion = this.isLoggedIn();
+    this.initConfig();
     this.cartSubscription = this.cartService.cart.subscribe((_cart: Cart) => {
       this.cart = _cart;
       this.dataSource = _cart.items;
+      if(!this.estadoSesion){ //esto seria implementarlo en la principal solo en caso de que de logout lo limpie
+        this.onClearCart();
+      }
     });
+  }
+
+  private initConfig(): void {
+    this.payPalConfig = {
+      currency: 'EUR',
+      clientId: 'EGIEiTDPLtT3tifArVorAkXGidrpwDpsA0-9O4uiSZaQF1YfWmcM4aofe9P66vLy7O1iALKYwBdxhT4g',
+      createOrderOnClient: (data) => <ICreateOrderRequest>{
+        intent: 'CAPTURE',
+        purchase_units: this.getPurchaseUnits()
+      },
+      onApprove: (data, actions) => {
+        actions.order.capture().then((details: any) => {
+          console.log('Transaction completed:', details);
+          this.onCheckout(); // Llamada a onCheckout después de que la transacción sea aprobada
+          this.onClearCart();
+        });
+      },
+      onError: err => {
+        console.error('PayPal error:', err);
+      }
+    };
+  }
+
+  private getPurchaseUnits() {
+    const items = this.cart.items.map(item => ({
+      name: item.name,
+      quantity: item.quantity.toString(),
+      unit_amount: {
+        currency_code: 'USD',
+        value: item.price.toFixed(2)
+      }
+    }));
+
+    const total = this.getTotal(this.cart.items).toFixed(2);
+
+    return [{
+      amount: {
+        currency_code: 'USD',
+        value: total,
+        breakdown: {
+          item_total: {
+            currency_code: 'USD',
+            value: total
+          }
+        }
+      },
+      items: items
+    }];
   }
 
   getTotal(items: CartItem[]): number {
@@ -53,42 +109,51 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   onCheckout(): void {
-    //primero quiero que me haga la insercion a la api 
-    this.cart.items.forEach(item => {
-      this.http
-        .post('http://localhost:8000/carrito/agregar-producto', {
-          productos_id: item.id,
-          cantidad: item.quantity
-        }, {
+    const addProductObservables = this.cart.items.map(item => {
+      return this.http.post('http://localhost:8000/carrito/agregar-producto', {
+        productos_id: item.id,
+        cantidad: item.quantity
+      }, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        }),
+        withCredentials: true // Importante para enviar cookies/sesión
+      });
+    });
+
+    // Usa forkJoin para esperar a que todas las llamadas a agregar producto se completen
+    forkJoin(addProductObservables).subscribe(
+      responses => {
+        console.log('Productos añadidos al carrito:', responses);
+
+        // Llama al endpoint para crear la orden
+        this.http.post('http://localhost:8000/crear-orden', null, {
           headers: new HttpHeaders({
             'Content-Type': 'application/json'
           }),
-          withCredentials: true
+          withCredentials: true, // Asegúrate de enviar credenciales
+          responseType: 'text' // Espera una respuesta en texto plano
         })
         .subscribe(
-          response => {
-            console.log('Respuesta del backend:', response);
+          (response: any) => {
+            console.log('Orden creada:', response);
+
+            // Redirige a la página de confirmación de pago o realiza otra acción necesaria
+            // Ejemplo de redirección:
           },
           error => {
-            console.error('Error del backend:', error);
+            console.error('Error al crear la orden:', error);
           }
         );
-    });
-       
+      },
+      error => {
+        console.error('Error al añadir productos al carrito:', error);
+      }
+    );
+  }
 
-    //luego
-    this.http
-      .post('http://localhost:4242/checkout', {
-        items: this.cart.items,
-      })
-      .subscribe(async (res: any) => {
-        let stripe = await loadStripe('your token');
-        stripe?.redirectToCheckout({
-          sessionId: res.id,
-        });
-        /**
-    */
-  });
+  isLoggedIn(): boolean {
+    return localStorage.getItem('user_role') !== null;
   }
 
   ngOnDestroy() {

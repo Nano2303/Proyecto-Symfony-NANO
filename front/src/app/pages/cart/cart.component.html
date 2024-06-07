@@ -68,14 +68,10 @@
           </button>
         </td>
         <td mat-footer-cell *matFooterCellDef>
-          <button
-            (click)="onCheckout()"
-            mat-raised-button
-            color="primary"
-            class="float-right"
-          >
-            Pagar
-          </button>
+          <div *ngIf="estadoSesion && cart.items.length > 0" class="paypal-container" >
+            <ngx-paypal [config]="payPalConfig"></ngx-paypal>
+        
+          </div>
         </td>
       </ng-container>
   
@@ -98,4 +94,7 @@
       <br>
     </mat-card>
   </mat-card>
+
+  
+
 </div>
