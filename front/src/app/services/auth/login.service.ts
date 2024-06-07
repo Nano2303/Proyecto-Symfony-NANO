@@ -4,6 +4,7 @@ import { LoginRequest } from './login.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError, tap } from 'rxjs';
 import { User } from './user';
+import { CartService } from '../cart.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class LoginService {
   private apiUrl = 'http://localhost:8000/login'; // Asegúrate de que esta URL apunte a tu backend
   private URLAPI = 'http://localhost:8000';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,  private cartService: CartService) { }
 
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post<any>(this.apiUrl, credentials,{ withCredentials: true }).pipe(

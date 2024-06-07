@@ -131,6 +131,59 @@ class OrdenesController extends AbstractController
             return new Response('Error en el pago con PayPal.', 400);
         }
     }
+
+
+
+   #[Route('/obtener-ordenes', name: 'obtener_ordenes', methods: ['GET'])]
+    public function getOrders(): Response
+    {
+        // Obtener todas las órdenes desde la base de datos
+        $ordenes = $this->entityManager->getRepository(Ordenes::class)->findAll();
+
+        // Transformar las órdenes a un array para devolver como JSON
+        $ordenesData = [];
+        foreach ($ordenes as $orden) {
+            $ordenesData[] = $this->getDetallesOrden($orden);
+        }
+
+        return $this->json($ordenesData);
+    }
+
+    private function getDetallesOrden(Ordenes $orden): array
+    {
+        $detallesOrden = [];
+
+        foreach ($orden->getDetallesOrden() as $detalle) {
+            $producto = $detalle->getProductos();
+            $detallesOrden[] = [
+                'producto_id' => $producto->getId(),
+                'producto_nombre' => $producto->getNombre(),
+                'producto_descripcion' => $producto->getDescripcion(),
+                'producto_precio' => $producto->getPrecio(),
+                'cantidad' => $detalle->getCantidad(),
+                'precioUnitario' => $detalle->getPrecioUnitario(),
+                'total' => $detalle->getCantidad() * $detalle->getPrecioUnitario(),
+            ];
+        }
+
+        $pago = $orden->getPagos();
+
+        return [
+            'id' => $orden->getId(),
+            'fecha' => $orden->getFecha(),
+            'total' => $orden->getTotal(),
+            'usuario' => $orden->getUsuarios()->getEmail(),
+            'direccionEnvio' => $orden->getDireccionEnvio(),
+            'estado' => $orden->getEstado(),
+            'pago' => [
+                'monto' => $pago->getMonto(),
+                'metodo' => $pago->getMetodoPago(),
+                'fecha' => $pago->getFecha()->format('Y-m-d H:i:s'),
+            ],
+            'detalles' => $detallesOrden,
+        ];
+    }
+
 }
 
 /**<?php
