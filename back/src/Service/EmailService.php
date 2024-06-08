@@ -23,48 +23,103 @@ class EmailService
     public function enviarDetallesDeOrden($data)
     {
    
-    $fecha = $data['fecha'];
-    $usuario = $data['usuario'];
-    $direccionEnvio = $data['direccion_envio'];
-    $pago = $data['pago'];
-    $productos = $data['productos'];
-    $estado = $data['estado'];
-    $total = $data['total'];
-
-    // Construir el cuerpo del correo electrónico
-    $body = "
-        <h1>Detalles de la Orden</h1>
-        <p><strong>Fecha:</strong> $fecha</p>
-        <h2>Información del Usuario</h2>
-        <p><strong>Nombre:</strong> {$usuario['nombre']}</p>
-        <p><strong>Email:</strong> {$usuario['email']}</p>
-        <h2>Dirección de Envío</h2>
-        <p><strong>Calle:</strong> {$direccionEnvio['calle']}</p>
-        <p><strong>Ciudad:</strong> {$direccionEnvio['ciudad']}</p>
-        <p><strong>Provincia:</strong> {$direccionEnvio['provincia']}</p>
-        <p><strong>Código Postal:</strong> {$direccionEnvio['codigo_postal']}</p>
-        <p><strong>País:</strong> {$direccionEnvio['pais']}</p>
-        <h2>Detalles del Pago</h2>
-        <p><strong>Monto:</strong> {$pago['monto']}</p>
-        <p><strong>Método:</strong> {$pago['metodo']}</p>
-        <h2>Productos</h2>";
-
-    foreach ($productos as $producto) {
-        $body .= "
-            <p><strong>Nombre:</strong> {$producto['nombre']}</p>
-            <p><strong>Cantidad:</strong> {$producto['cantidad']}</p>
-            <p><strong>Precio Unitario:</strong> {$producto['precio_unitario']}</p>
-            <p><strong>Subtotal:</strong> {$producto['subtotal']}</p>";
-    }
-
-    $body .= "
-        <h2>Estado de la Orden</h2>
-        <p><strong>Estado:</strong> $estado</p>
-        <h2>Total</h2>
-        <p><strong>Total:</strong> $total</p>";
-
-
-    $this->enviarEmail($usuario['email'],'Detalles de tu compra', $body);
+     // Extraer detalles de la orden
+     $fecha = $data['fecha'];
+     $usuario = $data['usuario'];
+     $direccionEnvio = $data['direccion_envio'];
+     $pago = $data['pago'];
+     $productos = $data['productos'];
+     $estado = $data['estado'];
+     $total = $data['total'];
+ 
+     // Construir el cuerpo del correo electrónico en formato de ticket
+     $body = "
+         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; background: #f9f9f9;'>
+             <h1 style='text-align: center; font-size: 24px; margin-bottom: 20px;'>SYNONYM</h1>
+             <h2 style='text-align: center; font-size: 16px; margin-bottom: 10px;'>Detalles de la Orden</h2>
+             <p style='text-align: center; font-size: 12px; margin-bottom: 10px;'>Fecha: <strong>$fecha</strong></p>
+             <hr style='border: none; border-top: 1px solid #ccc;'>
+             <table style='width: 100%; font-size: 12px; border-collapse: collapse;'>
+                 <tr>
+                     <th style='text-align: left; padding: 8px; background-color: #f2f2f2;'>Información del Usuario</th>
+                 </tr>
+                 <tr>
+                     <td style='padding: 8px;'>Nombre: {$usuario['nombre']}</td>
+                 </tr>
+                 <tr>
+                     <td style='padding: 8px;'>Email: {$usuario['email']}</td>
+                 </tr>
+                 <tr>
+                     <th style='text-align: left; padding: 8px; background-color: #f2f2f2;'>Dirección de Envío</th>
+                 </tr>
+                 <tr>
+                     <td style='padding: 8px;'>Calle: {$direccionEnvio['calle']}</td>
+                 </tr>
+                 <tr>
+                     <td style='padding: 8px;'>Ciudad: {$direccionEnvio['ciudad']}</td>
+                 </tr>
+                 <tr>
+                     <td style='padding: 8px;'>Provincia: {$direccionEnvio['provincia']}</td>
+                 </tr>
+                 <tr>
+                     <td style='padding: 8px;'>Código Postal: {$direccionEnvio['codigo_postal']}</td>
+                 </tr>
+                 <tr>
+                     <td style='padding: 8px;'>País: {$direccionEnvio['pais']}</td>
+                 </tr>
+                 <tr>
+                     <th style='text-align: left; padding: 8px; background-color: #f2f2f2;'>Detalles del Pago</th>
+                 </tr>
+                 <tr>
+                     <td style='padding: 8px;'>Monto: {$pago['monto']}</td>
+                 </tr>
+                 <tr>
+                     <td style='padding: 8px;'>Método: {$pago['metodo']}</td>
+                 </tr>
+             </table>
+             <hr style='border: none; border-top: 1px solid #ccc; margin: 20px 0;'>
+             <h2 style='font-size: 14px; margin-bottom: 10px;'>Productos</h2>
+             <table style='width: 100%; font-size: 12px; border-collapse: collapse;'>
+                 <thead>
+                     <tr>
+                         <th style='border-bottom: 1px solid #ddd; text-align: left;'>Cantidad</th>
+                         <th style='border-bottom: 1px solid #ddd; text-align: left;'>Producto</th>
+                         <th style='border-bottom: 1px solid #ddd; text-align: right;'>Subtotal</th>
+                     </tr>
+                 </thead>
+                 <tbody>";
+     
+     if (is_array($productos) && !empty($productos)) {
+         $count = 0;
+         foreach ($productos as $producto) {
+             $body .= "
+                 <tr>
+                     <td style='border-bottom: 1px solid #ddd;'>{$producto['cantidad']}</td>
+                     <td style='border-bottom: 1px solid #ddd;'>{$producto['nombre']}</td>
+                     <td style='border-bottom: 1px solid #ddd; text-align: right;'>{$producto['precio_unitario']} × {$producto['cantidad']} = {$producto['subtotal']}</td>
+                 </tr>";
+             $count++;
+         }
+     } else {
+         $body .= "
+             <tr>
+                 <td colspan='3' style='text-align: center;'>No hay productos en la orden.</td>
+             </tr>";
+     }
+ 
+     $body .= "
+                 </tbody>
+             </table>
+             <h2 style='font-size: 14px; margin: 20px 0 10px;'>Estado de la Orden</h2>
+             <p style='font-size: 12px;'><strong>Estado:</strong> $estado</p>
+             <h2 style='font-size: 14px; margin: 20px 0 10px;'>Total</h2>
+             <p style='font-size: 12px;'><strong>Total:</strong> $total</p>
+             <hr style='border: none; border-top: 1px solid #ccc;'>
+             <p style='font-size: 12px; text-align: center;'>Gracias por su compra!</p>
+         </div>";
+ 
+     // Envía el correo
+     $this->enviarEmail($usuario['email'], 'Detalles de tu compra', $body);
     }
 
 
@@ -121,5 +176,5 @@ class EmailService
     
     }
 
-    
+
 }

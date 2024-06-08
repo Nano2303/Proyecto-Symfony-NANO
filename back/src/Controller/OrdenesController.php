@@ -108,7 +108,7 @@ class OrdenesController extends AbstractController
                     'metodo' => 'PayPal',
                 ],
                 'productos' => [],
-                'estado' => 'Pendiente',
+                'estado' => 'Pagado',
                 'total' => 0,
             ];
     
