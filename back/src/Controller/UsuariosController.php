@@ -81,5 +81,21 @@ class UsuariosController extends AbstractController
         return $this->usuariosServices->getInfoUserActual($email_usuario);
     }
    
-    
+    #[Route('/update-user-info', name: 'update_user_info', methods: ['PUT'])]
+    public function updateUserInfo(Request $request, SessionInterface $session): Response
+    {
+        $email_usuario = $session->get('user_email');
+
+        if (!$email_usuario) {
+            return new JsonResponse(['error' => 'Aun no has iniciado sesion'], Response::HTTP_NETWORK_AUTHENTICATION_REQUIRED);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data) {
+            return new JsonResponse(['error' => 'Datos inválidos'], Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->usuariosServices->updateUserInfo($email_usuario, $data);
+    }
 }

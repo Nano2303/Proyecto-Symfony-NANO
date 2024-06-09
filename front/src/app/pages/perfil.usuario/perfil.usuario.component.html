@@ -1,0 +1,68 @@
+<br><br><br>
+<div class="max-w-2xl mx-auto p-8 bg-black rounded-lg shadow-md text-white">
+    <h1 class="text-3xl font-bold mb-6">Información personal</h1>
+
+    <div *ngIf="!editMode">
+        <p class="mb-4"><strong>Nombre completo:</strong> {{ nombre }}</p>
+        <p class="mb-4"><strong>Correo electrónico:</strong> {{ email }}</p>
+        <p class="mb-4"><strong>Teléfono:</strong> {{ telefono }}</p>
+
+        <h4 class="text-2xl font-semibold mt-6 mb-4">Dirección</h4>
+        <p class="mb-4"><strong>Calle:</strong> {{ calle }}</p>
+        <p class="mb-4"><strong>Ciudad:</strong> {{ ciudad }}</p>
+        <p class="mb-4"><strong>Provincia:</strong> {{ provincia }}</p>
+        <p class="mb-4"><strong>Código Postal:</strong> {{ codigo_postal }}</p>
+        <p class="mb-4"><strong>País:</strong> {{ pais }}</p>
+
+        <button (click)="editMode = true" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Editar</button>
+    </div>
+
+    <form *ngIf="editMode" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div class="relative z-0 w-full group">
+            <input type="text" [(ngModel)]="nombre" name="nombre" id="nombre" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="nombre" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600">Nombre completo</label>
+        </div>
+
+        <div class="relative z-0 w-full group">
+            <input type="email" [(ngModel)]="email" name="email" id="email" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " readonly />
+            <label for="email" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600">Correo electrónico</label>
+        </div>
+
+        <div class="relative z-0 w-full group">
+            <input type="tel" [(ngModel)]="telefono" name="telefono" id="telefono" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="telefono" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600">Teléfono</label>
+        </div>
+
+        <h4 class="text-2xl font-semibold mt-6">Dirección</h4>
+
+        <div class="relative z-0 w-full group">
+            <input type="text" [(ngModel)]="calle" name="calle" id="calle" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="calle" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600">Calle</label>
+        </div>
+
+        <div class="relative z-0 w-full group">
+            <input type="text" [(ngModel)]="ciudad" name="ciudad" id="ciudad" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="ciudad" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600">Ciudad</label>
+        </div>
+
+        <div class="relative z-0 w-full group">
+            <input type="text" [(ngModel)]="provincia" name="provincia" id="provincia" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="provincia" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600">Provincia</label>
+        </div>
+
+        <div class="relative z-0 w-full group">
+            <input type="text" [(ngModel)]="codigo_postal" name="codigo_postal" id="codigo_postal" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="codigo_postal" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600">Código postal</label>
+        </div>
+
+        <div class="relative z-0 w-full group">
+            <input type="text" [(ngModel)]="pais" name="pais" id="pais" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="pais" class="peer-focus:font-medium absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600">País</label>
+        </div>
+
+        <div class="flex justify-between">
+            <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Guardar cambios</button>
+            <button type="button" (click)="cancelEdit()" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600">Cancelar</button>
+        </div>
+    </form>
+</div>

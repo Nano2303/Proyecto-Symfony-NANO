@@ -63,4 +63,35 @@ class UsuariosServices
     }
 
     
+    public function updateUserInfo($email_usuario, $data): JsonResponse
+    {
+        $user = $this->usuariosRepository->findOneByEmail($email_usuario);
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'Usuario no encontrado'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Actualizar la información del usuario
+        $user->setNombre($data['nombre']);
+        $user->setTelefono($data['telefono']);
+        $user->setEmail($data['email']);  // Opcional, si se permite cambiar el email
+
+        // Actualizar la dirección
+        $direcciones = $user->getDirecciones();
+        $direccion = $direcciones->first();  // Asumiendo que hay una sola dirección
+
+        if ($direccion) {
+            $direccion->setCalle($data['calle']);
+            $direccion->setCiudad($data['ciudad']);
+            $direccion->setProvincia($data['provincia']);
+            $direccion->setCodigoPostal($data['codigo_postal']);
+            $direccion->setPais($data['pais']);
+        }
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['message' => 'Información actualizada correctamente'], Response::HTTP_OK);
+    }
+    
 }
