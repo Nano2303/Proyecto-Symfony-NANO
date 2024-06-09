@@ -7,6 +7,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { RecoverPassComponent } from './pages/recover-pass/recover-pass.component';
 import { DetailsComponent } from './pages/details/details.component';
 import { NgxPayPalModule } from 'ngx-paypal';
+import { AdminComponent } from './pages/admin/admin.component';
 const routes: Routes = [
   {
     path: 'home',
@@ -33,6 +34,10 @@ const routes: Routes = [
     path: 'details/:id',
     component: DetailsComponent,
   },
+  {
+    path: 'admin',
+    component: AdminComponent
+  }
 
 ];
 

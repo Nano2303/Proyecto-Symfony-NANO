@@ -5,6 +5,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError, tap } from 'rxjs';
 import { User } from './user';
 import { CartService } from '../cart.service';
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,7 @@ export class LoginService {
   private apiUrl = 'http://localhost:8000/login'; // Asegúrate de que esta URL apunte a tu backend
   private URLAPI = 'http://localhost:8000';
 
-  constructor(private http: HttpClient,  private cartService: CartService) { }
+  constructor(private http: HttpClient,  private cartService: CartService, private location: Location) { }
 
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post<any>(this.apiUrl, credentials,{ withCredentials: true }).pipe(
@@ -22,11 +24,21 @@ export class LoginService {
         if (response.rol && response.email) {
           localStorage.setItem('user_role', response.rol);
           localStorage.setItem('user_email', response.email);
+          this.redirectUserBasedOnRole(response.rol);
         }
 
       }),
       catchError(this.handleError)
     );
+  }
+
+  private redirectUserBasedOnRole(role: string) {
+    if (role == 'ROLE_ADMIN') {
+      window.location.href =('/admin');
+      console.log("asdasd")
+    } else {
+      window.location.href =('/home');
+    }
   }
 
   logout(): Observable<any> {

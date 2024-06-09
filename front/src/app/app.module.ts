@@ -34,6 +34,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { DetailsComponent } from './pages/details/details.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxPayPalModule } from 'ngx-paypal';
+import { RouterModule, Routes } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,7 @@ import { NgxPayPalModule } from 'ngx-paypal';
     RecoverPassComponent,
     LoginComponent,
     DetailsComponent,
-    RecoverPassComponent
+    RecoverPassComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,7 +70,7 @@ import { NgxPayPalModule } from 'ngx-paypal';
     MatSnackBarModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [CartService, StoreService],
   bootstrap: [AppComponent],
