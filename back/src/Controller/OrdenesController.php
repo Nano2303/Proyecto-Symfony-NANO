@@ -80,7 +80,7 @@ class OrdenesController extends AbstractController
             $orden->setUsuarios($usuario);
             $orden->setDireccionEnvio($direccion->getCalle() . ', ' . $direccion->getCiudad() . ', ' . $direccion->getProvincia() . ', ' . $direccion->getCodigoPostal() . ', ' . $direccion->getPais());
             $orden->setPagos($pago);
-            $orden->setEstado('Pendiente');
+            $orden->setEstado('PAGADO');
             
             $totalOrden = 0;
     
