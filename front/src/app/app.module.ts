@@ -35,6 +35,7 @@ import { DetailsComponent } from './pages/details/details.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxPayPalModule } from 'ngx-paypal';
 import { RouterModule, Routes } from '@angular/router';
+import { HistorialPedidosComponent } from './pages/historial-pedidos/historial-pedidos.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { RouterModule, Routes } from '@angular/router';
     LoginComponent,
     DetailsComponent,
     RecoverPassComponent,
+    HistorialPedidosComponent
   ],
   imports: [
     BrowserModule,

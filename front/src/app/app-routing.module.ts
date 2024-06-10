@@ -9,6 +9,7 @@ import { DetailsComponent } from './pages/details/details.component';
 import { NgxPayPalModule } from 'ngx-paypal';
 import { AdminComponent } from './pages/admin/admin.component';
 import { PerfilUsuarioComponent } from './pages/perfil.usuario/perfil.usuario.component';
+import { HistorialPedidosComponent } from './pages/historial-pedidos/historial-pedidos.component';
 const routes: Routes = [
   {
     path: 'home',
@@ -47,6 +48,10 @@ const routes: Routes = [
   {
     path: 'home/:id',
     component: HomeComponent,
+  },
+  {
+    path: 'orders',
+    component: HistorialPedidosComponent,
   }
 
 ];

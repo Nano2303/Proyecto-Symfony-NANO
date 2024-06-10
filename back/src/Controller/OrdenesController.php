@@ -10,6 +10,7 @@ use App\Entity\Usuarios;
 use App\Repository\UsuariosRepository;
 use App\Repository\CarritoComprasRepository;
 use App\Repository\DireccionesRepository;
+use App\Repository\OrdenesRepository;
 use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,18 +27,21 @@ class OrdenesController extends AbstractController
     private $carritoComprasRepository;
     private $direccionesRepository;
     private $emailService;
+    private $ordenesRepository;
     public function __construct(
         EntityManagerInterface $entityManager,
         UsuariosRepository $usuariosRepository,
         CarritoComprasRepository $carritoComprasRepository,
         DireccionesRepository $direccionesRepository,
-        EmailService $emailService
+        EmailService $emailService,
+        OrdenesRepository $ordenesRepository
     ) {
         $this->entityManager = $entityManager;
         $this->usuariosRepository = $usuariosRepository;
         $this->carritoComprasRepository = $carritoComprasRepository;
         $this->direccionesRepository = $direccionesRepository;
         $this->emailService = $emailService;
+        $this->ordenesRepository = $ordenesRepository;
     }
 
     #[Route('/ordenes', name: 'app_ordenes')]
@@ -148,6 +152,42 @@ class OrdenesController extends AbstractController
         }
     }
     
+
+    #[Route('/get-ordenes', name: 'get_ordenes_usuario', methods: ['GET'])]
+    public function getOrdersUser(SessionInterface $session): JsonResponse
+    {
+        $userEmail = $session->get('user_email');
+        if (!$userEmail) {
+            return new JsonResponse(['error' => 'Usuario no autenticado.'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $usuario = $this->usuariosRepository->findOneByEmail($userEmail);
+        if (!$usuario) {
+            return new JsonResponse(['error' => 'Usuario no encontrado.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $ordenes = $this->ordenesRepository->findBy(['usuarios' => $usuario]);
+        $ordenesArray = [];
+        foreach ($ordenes as $orden) {
+            $ordenesArray[] = [
+                'id' => $orden->getId(),
+                'fecha' => $orden->getFecha(),
+                'total' => $orden->getTotal(),
+                'estado' => $orden->getEstado(),
+                'direccion_envio' => $orden->getDireccionEnvio(),
+                'productos' => array_map(function($detalleOrden) {
+                    return [
+                        'id' => $detalleOrden->getProductos()->getId(),
+                        'nombre' => $detalleOrden->getProductos()->getNombre(),
+                        'cantidad' => $detalleOrden->getCantidad(),
+                        'precio_unitario' => $detalleOrden->getPrecioUnitario(),
+                    ];
+                }, $orden->getDetallesOrden()->toArray())
+            ];
+        }
+
+        return new JsonResponse($ordenesArray);
+    }
 
 }
 
