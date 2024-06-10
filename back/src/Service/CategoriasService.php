@@ -29,6 +29,23 @@ class CategoriasService{
         $this->categoriaRepository = $categoriaRepository;
 
     }
+    public function getCategorias(
+        ):Response {
+    
+            $categorias = $this->categoriaRepository->findAll();
+            $categoriasArray = [];
+    
+            foreach ($categorias as $categoria) {
+                $categoriasArray[] = [
+                    'id' => $categoria->getId(),
+                    'nombre' => $categoria->getNombre(),
+                    'descripcion' => $categoria->getDescripcion(),
+                ];
+            }
+    
+            return new JsonResponse(['categorias' => $categoriasArray]);
+        
+        }
 
     public function crearCategoria(Request $request): JsonResponse
     {

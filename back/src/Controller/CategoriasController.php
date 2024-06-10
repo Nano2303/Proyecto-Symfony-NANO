@@ -65,6 +65,13 @@ class CategoriasController extends AbstractController
         return $this->categoriaService->crearCategoria($request);
     }
 
+    #[Route('/get-categorias', name: 'get_categorias', methods: ['GET'])]
+    public function getCategorias(
+    ):Response {
+
+
+        return $this->categoriaService->getCategorias();
+    }
 
     #[Route('/get-productos-categoria', name: 'get_productos_categoria', methods: ['GET'])]
     public function getProductosCategoria(
@@ -72,8 +79,6 @@ class CategoriasController extends AbstractController
         SessionInterface $session
     ):Response {
 
-        if (!$session->isStarted()) {
-        }
 
         return $this->categoriaService->getProductosCategoria($request);
     }
