@@ -1,1 +1,84 @@
-<p>admin works!</p>
+<br><br><br><br>
+<div class="max-w-md mx-auto">
+    <!-- Formulario de crear categorias -->
+    <div class="my-4">
+        <h2>Crear Categorias</h2>
+        <form (ngSubmit)="crearCategoria()" class="bg-black-100 p-6 rounded-lg">
+            <label for="nombre" class="block mb-2">Nombre categoría</label>
+            <input name="nombre" [(ngModel)]="nombreCategoria" type="text" required class="w-full border border-black-300 p-2 rounded-md mb-4">
+            <label for="descripcion" class="block mb-2">Descripción</label>
+            <input name="descripcion" [(ngModel)]="descripcionCategoria" type="text" required class="w-full border border-black-300 p-2 rounded-md mb-4">
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Crear categoría</button>
+        </form>
+    </div>
+    
+    <div class="my-4">
+        <h2>Crear Productos</h2>
+        <form (ngSubmit)="crearProducto()" class="bg-black-100 p-6 rounded-lg">
+            <label for="nombre" class="block mb-2">Nombre</label>
+            <input name="nombre" [(ngModel)]="nombre" type="text" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+    
+            <label for="descripcion" class="block mb-2">Descripción</label>
+            <input name="descripcion" [(ngModel)]="descripcion" type="text" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+    
+            <label for="precio" class="block mb-2">Precio</label>
+            <input name="precio" [(ngModel)]="precio" type="number" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+    
+            <label for="talla" class="block mb-2">Talla</label>
+            <input name="talla" [(ngModel)]="talla" type="text" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+    
+            <label for="color" class="block mb-2">Color</label>
+            <input name="color" [(ngModel)]="color" type="text" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+    
+            <label for="cantidadInventario" class="block mb-2">Cantidad de stock</label>
+            <input name="cantidadInventario" [(ngModel)]="cantidadInventario" type="number" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+    
+            <label for="categoria-id" class="block mb-2">Categoría</label>
+            <select name="categoria-id" [(ngModel)]="categoriaId" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+                <option value="" disabled selected hidden>Elije una categoría</option>
+                <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
+            </select>
+    
+            <label for="imagen" class="block mb-2">Imagen</label>
+            <input name="imagen" type="file" (change)="onFileSelected($event)" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+    
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Crear producto</button>
+        </form>
+    </div>
+    
+    
+
+    <div class="my-4">
+        <h2>Reponer Stock</h2>
+        <form (ngSubmit)="reponerStock()" class="bg-black-100 p-6 rounded-lg">
+            <label for="id" class="block mb-2">Id del producto</label>
+            <input name="id" [(ngModel)]="productoId" type="number" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+            <label for="Cantidad" class="block mb-2">Cantidad</label>
+            <input name="cantidad" [(ngModel)]="cantidad" type="number" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Reponer stock</button>
+        </form>
+    </div>
+    
+
+    <!-- Formulario de borrar usuario-->
+    <div class="my-4">
+        <h2>Borrar Usuario</h2>
+        <form (ngSubmit)="borrarUsuario()" class="bg-black-100 p-6 rounded-lg">
+            <label for="email" class="block mb-2">Email del usuario</label>
+            <input type="email" name="email" [(ngModel)]="email" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Borrar usuario</button>
+        </form>
+    </div>
+    
+
+    <!-- Formulario de borrar producto-->
+    <div class="my-4">
+        <h2>Borrar Producto</h2>
+        <form (ngSubmit)="borrarProducto()" class="bg-black-100 p-6 rounded-lg">
+            <label for="id-producto" class="block mb-2">Id del producto a eliminar</label>
+            <input type="number" name="id-producto" [(ngModel)]="productoIdEliminar" required class="w-full border border-black-300 p-2 rounded-md mb-2">
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md">Borrar producto</button>
+        </form>
+    </div>
+    
+</div>

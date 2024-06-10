@@ -1,12 +1,166 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-admin',
-  standalone: true,
-  imports: [],
   templateUrl: './admin.component.html',
-  styleUrl: './admin.component.scss'
+  styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent {
+  nombreCategoria: string = '';
+  descripcionCategoria: string = '';
+
+
+  categorias: any[] = [];
+  nombre: string = '';
+  descripcion: string = '';
+  precio: number | null = null;
+  talla: string = '';
+  color: string = '';
+  cantidadInventario: number | null = null;
+  categoriaId: number | null = null;
+  imagen: File | null = null;
+  src: string = '';
+
+  productoId: number | null = null; 
+  cantidad: number | null = null; 
+
+  email: string = '';
+
+  productoIdEliminar: number | null = null;
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.http.get<any>('http://localhost:8000/get-categorias').subscribe(
+      response => {
+        this.categorias = response.categorias;
+      },
+      error => {
+        console.error('Error al obtener categorías:', error);
+      }
+    );
+  }
+
+
+  crearCategoria() {
+    const categoria = {
+      nombre: this.nombreCategoria,
+      descripcion: this.descripcionCategoria
+    };
+
+    this.http.post<any>('http://localhost:8000/crear-categoria', categoria, {withCredentials: true}).subscribe(
+      response => {
+        console.log('Categoría creada exitosamente:', response);
+      },
+      error => {
+        console.error('Error al crear categoría:', error);
+      }
+    );
+  }
+
+
+
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.imagen = file;
+      this.src = file.name; 
+    }
+  }
+
+  crearProducto() {
+    if (this.imagen) {
+      const formData = new FormData();
+      formData.append('file', this.imagen, this.imagen.name);
+
+      this.http.post<any>('http://localhost:8000/file/upload', formData, {withCredentials: true}).subscribe(
+        response => {
+          this.enviarProducto();
+        },
+        error => {
+          console.error('Error al subir la imagen:', error);
+        }
+      );
+    } else {
+      this.enviarProducto();
+    }
+  }
+
+  enviarProducto() {
+    const producto = {
+      nombre: this.nombre,
+      descripcion: this.descripcion,
+      precio: this.precio,
+      talla: this.talla,
+      color: this.color,
+      cantidad_inventario: this.cantidadInventario,
+      categoria_id: this.categoriaId,
+      src: this.src
+    };
+
+    this.http.post<any>('http://localhost:8000/crear-productos', producto, {withCredentials: true}).subscribe(
+      response => {
+        console.log('Producto creado exitosamente:', response);
+      },
+      error => {
+        console.error('Error al crear producto:', error);
+      }
+    );
+  }
+
+  reponerStock() {
+    const reponerData = {
+      id: this.productoId,
+      cantidad: this.cantidad
+    };
+
+    this.http.patch<any>('http://localhost:8000/reponer_productos', reponerData, {withCredentials : true}).subscribe(
+      response => {
+        console.log('Stock repuesto exitosamente:', response);
+      },
+      error => {
+        console.error('Error al reponer stock:', error);
+      }
+    );
+  }
+
+  borrarUsuario() {
+    const usuario = {
+      email: this.email
+    };
+
+    this.http.patch<any>('http://localhost:8000/delete-user', usuario, {withCredentials: true}).subscribe(
+      response => {
+        console.log('Usuario borrado exitosamente:', response);
+      },
+      error => {
+        console.error('Error al borrar usuario:', error);
+      }
+    );
+  }
+
+  borrarProducto() {
+    if (!this.productoIdEliminar) {
+      console.error('No se proporcionó el ID del producto a eliminar');
+      return;
+    }
+  
+    const producto = { id: this.productoIdEliminar };
+  
+    this.http.request<any>('delete', 'http://localhost:8000/borrar_producto', {
+      body: producto,
+      withCredentials: true
+    }).subscribe(
+      response => {
+        console.log('Producto borrado exitosamente:', response);
+      },
+      error => {
+        console.error('Error al borrar producto:', error);
+      }
+    );
+  }
+  
 
 }

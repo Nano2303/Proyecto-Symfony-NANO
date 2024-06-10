@@ -32,10 +32,11 @@ import { RegisterComponent } from './pages/register/register.component';
 import { RecoverPassComponent } from './pages/recover-pass/recover-pass.component';
 import { LoginComponent } from './pages/login/login.component';
 import { DetailsComponent } from './pages/details/details.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxPayPalModule } from 'ngx-paypal';
 import { RouterModule, Routes } from '@angular/router';
 import { HistorialPedidosComponent } from './pages/historial-pedidos/historial-pedidos.component';
+import { AdminComponent } from './pages/admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { HistorialPedidosComponent } from './pages/historial-pedidos/historial-p
     LoginComponent,
     DetailsComponent,
     RecoverPassComponent,
-    HistorialPedidosComponent
+    HistorialPedidosComponent,
+    AdminComponent
   ],
   imports: [
     BrowserModule,
@@ -73,6 +75,7 @@ import { HistorialPedidosComponent } from './pages/historial-pedidos/historial-p
     BrowserAnimationsModule,
     HttpClientModule,
     ReactiveFormsModule,
+    FormsModule
   ],
   providers: [CartService, StoreService],
   bootstrap: [AppComponent],
