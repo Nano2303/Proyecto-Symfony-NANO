@@ -73,36 +73,43 @@ class CategoriasService{
     {
         $data = json_decode($request->getContent(), true);
 
-        $id_categoria = $data['id'] ?? null;
+    $id_categoria = $data['id'] ?? null;
 
-        if (!$id_categoria) {
-            return new JsonResponse(['error' => 'Campo id necesario'], Response::HTTP_NO_CONTENT);
-        }
+    if (!$id_categoria) {
+        return new JsonResponse(['error' => 'Campo id necesario'], Response::HTTP_NO_CONTENT);
+    }
 
-        $categoria = $this->categoriaRepository->find($id_categoria);
+    $categoria = $this->categoriaRepository->find($id_categoria);
 
-        if (!$categoria) {
-            return new JsonResponse(['error' => 'No se ha encontrado ninguna categoria con ese id'], Response::HTTP_NOT_FOUND);
-        }
+    if (!$categoria) {
+        return new JsonResponse(['error' => 'No se ha encontrado ninguna categoria con ese id'], Response::HTTP_NOT_FOUND);
+    }
 
-        $productos = $categoria->getProductos();
+    $productos = $categoria->getProductos();
+    error_log('Productos encontrados: ' . count($productos));
 
-        foreach ($productos as $producto) {
-            $datosProductos[] = [
-                'id' => $producto->getId(),
-                'categorias_id' => $producto->getCategorias(),
-                'nombre' => $producto->getNombre(),
-                'descripcion' =>$producto->getDescripcion(),
-                'precio'=>$producto->getPrecio(),
-                'talla'=>$producto->getTalla(),
-                'color'=>$producto->getColor(),
-                'cantidad_inventario'=>$producto->getCantidadInventario(),
-                'src'=>$producto->getSrc()
-                // Agrega otras propiedades del producto según sea necesario
-            ];
-        }
+    if (count($productos) === 0) {
+        return new JsonResponse(['error' => 'No hay productos en esta categoría'], Response::HTTP_NOT_FOUND);
+    }
 
-        return new JsonResponse(['productos' => $datosProductos]);
+    $datosProductos = [];
+    foreach ($productos as $producto) {
+        error_log('Producto encontrado: ID = ' . $producto->getId() . ', Nombre = ' . $producto->getNombre());
+
+        $datosProductos[] = [
+            'id' => $producto->getId(),
+            'categorias_id' => $producto->getCategorias() ? $producto->getCategorias()->getId() : null,
+            'nombre' => $producto->getNombre(),
+            'descripcion' => $producto->getDescripcion(),
+            'precio' => $producto->getPrecio(),
+            'talla' => $producto->getTalla(),
+            'color' => $producto->getColor(),
+            'cantidad_inventario' => $producto->getCantidadInventario(),
+            'src' => $producto->getSrc()
+        ];
+    }
+
+    return new JsonResponse(['productos' => $datosProductos]);
     }
 
 
