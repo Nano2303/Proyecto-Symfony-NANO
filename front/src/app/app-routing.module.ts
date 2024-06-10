@@ -43,6 +43,10 @@ const routes: Routes = [
   {
     path: 'perfil',
     component: PerfilUsuarioComponent
+  },
+  {
+    path: 'home/:id',
+    component: HomeComponent,
   }
 
 ];

@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/models/product.model';
 import { CartService } from 'src/app/services/cart.service';
 import { StoreService } from 'src/app/services/store.service';
@@ -23,11 +24,18 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private cartService: CartService,
-    private storeService: StoreService
+    private storeService: StoreService,
+    private route: ActivatedRoute // Inyecta ActivatedRoute para obtener el parámetro de la ruta
   ) {}
 
   ngOnInit(): void {
-    this.getProducts();
+    this.route.paramMap.subscribe(params => {
+      const categoryId = params.get('id');
+      if (categoryId) {
+        this.category = categoryId;
+        this.getProductsByCategory(this.category);
+      }
+    });
   }
 
   onColumnsCountChange(colsNum: number): void {
@@ -53,6 +61,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   getProducts(): void {
     this.productsSubscription = this.storeService
       .getAllProducts()
+      .subscribe((_products) => {
+        this.products = this.filterAndSortProducts(_products);
+        this.categories = this.getCategories(_products);
+      });
+  }
+
+  getProductsByCategory(categoryId: string): void {
+    this.productsSubscription = this.storeService
+      .getProductsByCategory(categoryId)
       .subscribe((_products) => {
         this.products = this.filterAndSortProducts(_products);
         this.categories = this.getCategories(_products);

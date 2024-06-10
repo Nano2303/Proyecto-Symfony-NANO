@@ -107,6 +107,6 @@ export class HeaderComponent implements OnInit {
   }
 
   navigateToCategoria(categoriaId: number) {
-    this.router.navigate(['/details', categoriaId]);
+    this.router.navigate(['/home', categoriaId]);
   }
 }

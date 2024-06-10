@@ -1,20 +1,23 @@
 <mat-drawer-container
   [autosize]="true"
-  class="min-h-full  mx-auto border-x ssda"
+  class="min-h-full mx-auto border-x ssda"
 >
-  <!-- desplegable categorias -->
-<!-- <mat-drawer mode="side" opened class="p-6" style="background-color: black;">
+  <!-- Drawer for categories, can be activated with a button or similar -->
+  <!--
+  <mat-drawer mode="side" opened class="p-6" style="background-color: black;">
     <app-filters (showCategory)="onShowCategory($event)"></app-filters>
-  </mat-drawer>  -->
+  </mat-drawer>
+  -->
 
   <mat-drawer-content class="p-6">
-
-    <!-- Filtro -->
-    <!-- <app-products-header
+    <!-- Header with filtering options -->
+    <!--
+    <app-products-header
       (columnsCountChange)="onColumnsCountChange($event)"
       (itemsCountChange)="onItemsCountChange($event)"
       (sortChange)="onSortChange($event)"
-    ></app-products-header> -->
+    ></app-products-header>
+    -->
 
     <mat-grid-list
       *ngIf="products && products.length"
@@ -23,7 +26,6 @@
       [rowHeight]="rowHeight"
     >
       <mat-grid-tile *ngFor="let product of products">
-        
         <div
           (addToCart)="onAddToCart($event)"
           app-product-box
@@ -31,10 +33,7 @@
           [fullWidthMode]="cols === 1"
           class="w-full"
         ></div>
-
       </mat-grid-tile>
     </mat-grid-list>
-
   </mat-drawer-content>
-
 </mat-drawer-container>
