@@ -3,6 +3,7 @@ import { Cart, CartItem } from 'src/app/models/cart.model';
 import { CartService } from 'src/app/services/cart.service';
 import { LoginService } from 'src/app/services/auth/login.service';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +16,7 @@ export class HeaderComponent implements OnInit {
   estadoSesion = false;
   emailUsuario = '';
   menuOpen = false;
+  categorias: any[] = [];
 
   @Input()
   get cart(): Cart {
@@ -34,10 +36,13 @@ export class HeaderComponent implements OnInit {
   constructor(
     private cartService: CartService,
     private loginService: LoginService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadCategorias();
+  }
 
   getTotal(items: CartItem[]): number {
     return this.cartService.getTotal(items);
@@ -79,7 +84,7 @@ export class HeaderComponent implements OnInit {
       if (!this.isMouseInside()) {
         this.closeMenu();
       }
-    }, 200); // Espera un poco para evitar cierres accidentales
+    }, 200);
   }
 
   isMouseInside(): boolean {
@@ -88,5 +93,20 @@ export class HeaderComponent implements OnInit {
     const mouseInsideButton = categoryButton ? categoryButton.matches(':hover') : false;
     const mouseInsideMenu = categoryMenu ? categoryMenu.matches(':hover') : false;
     return mouseInsideButton || mouseInsideMenu;
+  }
+
+  loadCategorias() {
+    this.http.get<any>('http://localhost:8000/get-categorias').subscribe({
+      next: (response) => {
+        this.categorias = response.categorias;
+      },
+      error: (error) => {
+        console.error('Error al cargar categorías:', error);
+      }
+    });
+  }
+
+  navigateToCategoria(categoriaId: number) {
+    this.router.navigate(['/details', categoriaId]);
   }
 }

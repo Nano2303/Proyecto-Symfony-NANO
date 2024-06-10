@@ -1,31 +1,23 @@
 <div id="nav-container">
 
-  <!-- Botón para el menú de categorías -->
-  <div class="relative inline-block" (mouseenter)="keepMenuOpen()" (mouseleave)="checkCloseMenu()">
-    <button class="bg-black text-white font-bold py-2 px-4 rounded-full border border-gray-200 border-opacity-10 hover:bg-gray-700 hover:border-opacity-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
-      Categorías
-    </button>
+ <!-- Botón para el menú de categorías -->
+<div class="relative inline-block" (mouseenter)="keepMenuOpen()" (mouseleave)="checkCloseMenu()">
+  <button class="bg-black text-white font-bold py-2 px-4 rounded-full border border-gray-200 border-opacity-10 hover:bg-gray-700 hover:border-opacity-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
+    Categorías
+  </button>
 
-    <!-- Menú desplegable para las categorías -->
-    <div *ngIf="menuOpen" class="absolute bg-black mt-2 rounded-lg shadow-lg z-10" id="categoryMenu" (mouseenter)="keepMenuOpen()" (mouseleave)="checkCloseMenu()">
-      <div class="p-3 divide-y divide-solid divide-gray-700">
-        <div class="py-3">
-          <a routerLink="/categoria1" class="block flex items-center py-2 px-4 text-white hover:bg-gray-700 rounded-full">
-            <span class="material-icons mr-2 text-white">category</span>
-            <span class="text-base font-bold">Categoría 1</span>
-          </a>
-          <a routerLink="/categoria2" class="block flex items-center py-2 px-4 text-white hover:bg-gray-700 rounded-full">
-            <span class="material-icons mr-2 text-white">category</span>
-            <span class="text-base font-bold">Categoría 2</span>
-          </a>
-          <a routerLink="/categoria3" class="block flex items-center py-2 px-4 text-white hover:bg-gray-700 rounded-full">
-            <span class="material-icons mr-2 text-white">category</span>
-            <span class="text-base font-bold">Categoría 3</span>
-          </a>
-        </div>
+  <!-- Menú desplegable para las categorías -->
+  <div *ngIf="menuOpen" class="absolute bg-black mt-2 rounded-lg shadow-lg z-10" id="categoryMenu" (mouseenter)="keepMenuOpen()" (mouseleave)="checkCloseMenu()">
+    <div class="p-3 divide-y divide-solid divide-gray-700">
+      <div *ngFor="let categoria of categorias" class="py-3">
+        <a (click)="navigateToCategoria(categoria.id)" class="block flex items-center py-2 px-4 text-white hover:bg-gray-700 rounded-full">
+          <span class="material-icons mr-2 text-white">category</span>
+          <span class="text-base font-bold">{{ categoria.nombre }}</span>
+        </a>
       </div>
     </div>
   </div>
+</div>
 
 <div id="logo-wrapper">
   <a routerLink="home"><img src="./assets/img/logo.gif" id="logo-home"></a>
