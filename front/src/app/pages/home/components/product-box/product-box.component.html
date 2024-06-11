@@ -1,25 +1,17 @@
-<mat-card *ngIf="product" [ngClass]="{ 'text-center': !fullWidthMode }" class="no-border-card">
-  <div [ngClass]="{ flex: fullWidthMode }">
-    <a (click)="onViewDetails()">
-      <img
-        class="mb-1 mx-auto"
-        [ngClass]="{ 'h-[200px]': !fullWidthMode, 'h-[360px]': fullWidthMode }"
-        [src]="product.image"
-      />
-    </a>
-    <div class="w-full" [ngClass]="{ 'px-8 flex flex-col justify-between': fullWidthMode }">
-      <div>
-        <h5 class="product-text">{{ product.category }}</h5>
-        <p class="truncate hover:whitespace-normal product-text" [ngClass]="{ truncate: !fullWidthMode }">
-          {{ product.title }}
-        </p>
-        <p *ngIf="fullWidthMode" class="product-text">
-          {{ product.description }}
-        </p>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-white">{{ product.price | currency }}</span>
+<div *ngIf="product" class="w-72 bg-neutral-900 rounded-xl duration-500 transform hover:scale-105 my-5 mx-auto hover:shadow-[0_0_15px_5px_rgba(255,255,255,0.4)]">
+  <a (click)="onViewDetails()">
+    <img
+      class="mb-1 mx-auto w-72 object-cover rounded-t-xl"
+      [ngClass]="{ 'h-[350px]': !fullWidthMode, 'h-[600px]': fullWidthMode }"
+      [src]="product.image"
+      alt="Product Image"
+    />
+    <div class="px-4 py-3 w-72 text-center">
+      <span class="text-gray-400 mr-3 uppercase text-xs">synonym</span>
+      <p class="text-lg font-bold text-white truncate block capitalize">{{ product.title }}</p>
+      <div class="flex justify-center items-center">
+        <p class="text-lg font-semibold text-white cursor-auto my-3">€ {{ product.price }}</p>
       </div>
     </div>
-  </div>
-</mat-card>
+  </a>
+</div>
