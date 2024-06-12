@@ -11,7 +11,7 @@
     <div class="p-3 divide-y divide-solid divide-gray-700">
       <div *ngFor="let categoria of categorias" class="py-3">
         <a (click)="navigateToCategoria(categoria.id)" class="block flex items-center py-2 px-4 text-white hover:bg-gray-700 rounded-full">
-          <span class="material-icons mr-2 text-white">category</span>
+          
           <span class="text-base font-bold">{{ categoria.nombre }}</span>
         </a>
       </div>

@@ -14,9 +14,10 @@ export class HistorialPedidosComponent implements OnInit {
 
   ngOnInit(): void {
     this.ordenesService.getOrdenes().subscribe(ordenes => {
-      this.ordenes = ordenes;
+      this.ordenes = ordenes.sort((a, b) => b.id - a.id);
       this.cargarImagenesProductos();
     });
+    
   }
 
   cargarImagenesProductos(): void {

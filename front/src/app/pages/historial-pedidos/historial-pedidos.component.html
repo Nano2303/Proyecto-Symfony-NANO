@@ -1,17 +1,42 @@
-<div class="container mx-auto p-4 bg-black text-white">
-  <div *ngFor="let orden of ordenes" class="order bg-gray-900 p-4 rounded-lg shadow-lg mb-6">
-    <h2 class="text-2xl font-bold mb-2">Orden #{{ orden.id }}</h2>
-    <p class="mb-1"><span class="font-semibold">Fecha:</span> {{ orden.fecha }}</p>
-    <p class="mb-1"><span class="font-semibold">Total:</span> {{ orden.total }}</p>
-    <p class="mb-1"><span class="font-semibold">Estado:</span> {{ orden.estado }}</p>
-    <p class="mb-4"><span class="font-semibold">Dirección de envío:</span> {{ orden.direccion_envio }}</p>
-    
-    <div *ngIf="orden.productos && orden.productos.length > 0">
-      <h3 class="text-xl font-semibold mb-3">Productos:</h3>
-      <div *ngFor="let producto of orden.productos" class="product bg-gray-700 p-3 rounded-md flex items-center mb-3">
-        <p class="flex-1">{{ producto.title }} - <span class="font-semibold">Cantidad:</span> {{ producto.cantidad }}</p>
-        <img *ngIf="producto.image" [src]="producto.image" alt="Imagen del producto" class="w-16 h-16 rounded-lg object-cover">
+
+<div *ngFor="let orden of ordenes" class="py-14 px-1 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto dark:bg-neutral-800 m-5">
+  <div class="flex justify-start item-start space-y-2 flex-col">
+      <h1 class="text-3xl dark:text-white lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">Orden #{{ orden.id }}</h1>
+      <p class="text-base dark:text-gray-300 font-medium leading-6 text-gray-600"><span class="font-semibold">Fecha:</span> {{ orden.fecha }}</p>
+
+      <p class="text-base dark:text-gray-300 font-medium leading-6 text-gray-600"><span class="font-semibold">Estado:</span> {{ orden.estado }}</p>
+      <p class="text-base dark:text-gray-300 font-medium leading-6 text-gray-600"><span class="font-semibold">Dirección de envío:</span> {{ orden.direccion_envio }}</p>
+
+  </div> 
+  <div class="mt-10 flex flex-col xl:flex-row jusitfy-center items-stretch w-full xl:space-x-8 space-y-4 md:space-y-6 xl:space-y-0">
+      <div class="flex flex-col justify-start items-start w-full space-y-4 md:space-y-6 xl:space-y-8">
+          <div *ngIf="orden.productos && orden.productos.length > 0"class=" flex flex-col justify-start items-start dark:bg-neutral-700 bg-gray-50 px-4 py-4 md:py-6 md:p-6 xl:p-8 w-full">
+              <p class="text-lg md:text-xl dark:text-white font-semibold leading-6 xl:leading-5 text-gray-600">Carrito del cliente</p>
+              <div *ngFor="let producto of orden.productos" class="mt-4 md:mt-6 flex flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full">
+                  <div class="pb-4 md:pb-8 w-full md:w-40">
+                    <img *ngIf="producto.image" [src]="producto.image" alt="Imagen del producto" class="w-full hidden md:block">
+                  </div>
+                  <div class="border-b border-gray-200 md:flex-row flex-col flex justify-between items-start w-full pb-8 space-y-4 md:space-y-0">
+                    
+                      <div class="flex justify-between space-x-8 items-start w-full">
+                          <p class="text-base dark:text-white xl:text-lg leading-6 text-gray-600"> Cantidad:</p>
+                          <p class="text-base dark:text-white xl:text-lg leading-6 text-gray-600"> {{ producto.cantidad }}</p>
+                      </div>
+                </div>
+              </div>
+              
+          </div>
+          <div class="flex justify-center flex-col md:flex-row flex-col items-stretch w-full space-y-4 md:space-y-0 md:space-x-6 xl:space-x-8">
+            <div>
+                  <div class="flex justify-between items-center w-full">
+                      <p class="text-base dark:text-white font-semibold leading-4 text-gray-600">TOTAL:&nbsp; </p>
+                      <p class="text-base dark:text-gray-300 font-semibold leading-4 text-gray-600">{{ orden.total}}&nbsp;€ </p>
+                  </div>
+              </div>
+              
+          </div>
       </div>
-    </div>
+      
   </div>
 </div>
+
