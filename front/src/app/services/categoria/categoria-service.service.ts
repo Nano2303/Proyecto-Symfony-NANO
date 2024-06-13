@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment.prod';
 
 export interface Categoria {
   id: number;
@@ -12,11 +13,11 @@ export interface Categoria {
   providedIn: 'root'  // Este decorador registra el servicio en el inyector raíz
 })
 export class CategoriaServiceService {
-  private apiUrl = 'http://localhost:8000/get-categorias';
+  private apiUrl=environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
   getCategorias(): Observable<{ categorias: Categoria[] }> {
-    return this.http.get<{ categorias: Categoria[] }>(this.apiUrl);
+    return this.http.get<{ categorias: Categoria[] }>(`${this.apiUrl}/get-categorias`);
   }
 }

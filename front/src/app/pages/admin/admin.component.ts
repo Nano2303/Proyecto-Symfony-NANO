@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component } from '@angular/core';
-
+import { environment } from 'src/environments/environment.prod';
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
@@ -9,7 +9,6 @@ import { Component } from '@angular/core';
 export class AdminComponent {
   nombreCategoria: string = '';
   descripcionCategoria: string = '';
-
 
   categorias: any[] = [];
   nombre: string = '';
@@ -28,11 +27,12 @@ export class AdminComponent {
   email: string = '';
 
   productoIdEliminar: number | null = null;
+  apiUrl=environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get<any>('http://localhost:8000/get-categorias').subscribe(
+    this.http.get<any>(`${this.apiUrl}/get-categorias`).subscribe(
       response => {
         this.categorias = response.categorias;
       },
@@ -49,7 +49,7 @@ export class AdminComponent {
       descripcion: this.descripcionCategoria
     };
 
-    this.http.post<any>('http://localhost:8000/crear-categoria', categoria, {withCredentials: true}).subscribe(
+    this.http.post<any>(`${this.apiUrl}/crear-categoria`, categoria, {withCredentials: true}).subscribe(
       response => {
         console.log('Categoría creada exitosamente:', response);
       },
@@ -75,7 +75,7 @@ export class AdminComponent {
       const formData = new FormData();
       formData.append('file', this.imagen, this.imagen.name);
 
-      this.http.post<any>('http://localhost:8000/file/upload', formData, {withCredentials: true}).subscribe(
+      this.http.post<any>(`${this.apiUrl}/file/upload`, formData, {withCredentials: true}).subscribe(
         response => {
           this.enviarProducto();
         },
@@ -100,7 +100,7 @@ export class AdminComponent {
       src: this.src
     };
 
-    this.http.post<any>('http://localhost:8000/crear-productos', producto, {withCredentials: true}).subscribe(
+    this.http.post<any>(`${this.apiUrl}/crear-productos`, producto, {withCredentials: true}).subscribe(
       response => {
         console.log('Producto creado exitosamente:', response);
       },
@@ -116,7 +116,7 @@ export class AdminComponent {
       cantidad: this.cantidad
     };
 
-    this.http.patch<any>('http://localhost:8000/reponer_productos', reponerData, {withCredentials : true}).subscribe(
+    this.http.patch<any>(`${this.apiUrl}/reponer_productos`, reponerData, {withCredentials : true}).subscribe(
       response => {
         console.log('Stock repuesto exitosamente:', response);
       },
@@ -131,7 +131,7 @@ export class AdminComponent {
       email: this.email
     };
 
-    this.http.patch<any>('http://localhost:8000/delete-user', usuario, {withCredentials: true}).subscribe(
+    this.http.patch<any>(`${this.apiUrl}/delete-user`, usuario, {withCredentials: true}).subscribe(
       response => {
         console.log('Usuario borrado exitosamente:', response);
       },
@@ -149,7 +149,7 @@ export class AdminComponent {
   
     const producto = { id: this.productoIdEliminar };
   
-    this.http.request<any>('delete', 'http://localhost:8000/borrar_producto', {
+    this.http.request<any>('delete', `${this.apiUrl}/borrar_producto`, {
       body: producto,
       withCredentials: true
     }).subscribe(

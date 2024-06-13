@@ -3,17 +3,18 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Product } from '../models/product.model';
-
-const STORE_BASE_URL = 'http://localhost:8000/lista_productos';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StoreService {
+private apiUrl=environment.apiUrl; //'http://localhost:8000/lista_productos';
+
   constructor(private httpClient: HttpClient) {}
 
   getAllProducts(): Observable<Array<Product>> {
-    return this.httpClient.get<Array<any>>(STORE_BASE_URL).pipe(
+    return this.httpClient.get<Array<any>>(`${this.apiUrl}/lista_productos`).pipe(
       tap((products) => {
         // console.log('Raw products:', products); // Log the raw JSON response
       }),
@@ -22,7 +23,7 @@ export class StoreService {
   }
 
   getProductsByCategory(categoryId: string): Observable<Array<Product>> {
-    return this.httpClient.get<Array<any>>(`${STORE_BASE_URL}?categoria=${categoryId}`).pipe(
+    return this.httpClient.get<Array<any>>(`${this.apiUrl}/lista_productos?categoria=${categoryId}`).pipe(
       tap((products) => {
         // console.log('Filtered products:', products); // Log the filtered products
       }),

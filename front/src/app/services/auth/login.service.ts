@@ -7,18 +7,19 @@ import { User } from './user';
 import { CartService } from '../cart.service';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
-  private apiUrl = 'http://localhost:8000/login'; // Asegúrate de que esta URL apunte a tu backend
-  private URLAPI = 'http://localhost:8000';
+  private apiUrl=environment.apiUrl;
+ 
 
   constructor(private http: HttpClient,  private cartService: CartService, private location: Location) { }
 
   login(credentials: LoginRequest): Observable<any> {
-    return this.http.post<any>(this.apiUrl, credentials,{ withCredentials: true }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/login`, credentials,{ withCredentials: true }).pipe(
       tap(response =>{
 
         if (response.rol && response.email) {
@@ -42,7 +43,7 @@ export class LoginService {
   }
 
   logout(): Observable<any> {
-    return this.http.post<any>(`${this.URLAPI}/logout`, {},{ withCredentials: true }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/logout`, {},{ withCredentials: true }).pipe(
       tap((response) => {
         console.log(response);
         localStorage.removeItem('user_role');

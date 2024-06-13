@@ -4,6 +4,8 @@ import { CartService } from 'src/app/services/cart.service';
 import { LoginService } from 'src/app/services/auth/login.service';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment.prod';
+
 
 @Component({
   selector: 'app-header',
@@ -17,6 +19,7 @@ export class HeaderComponent implements OnInit {
   emailUsuario = '';
   menuOpen = false;
   categorias: any[] = [];
+  apiUrl = environment.apiUrl;
 
   @Input()
   get cart(): Cart {
@@ -96,7 +99,7 @@ export class HeaderComponent implements OnInit {
   }
 
   loadCategorias() {
-    this.http.get<any>('http://localhost:8000/get-categorias').subscribe({
+    this.http.get<any>(`${this.apiUrl}/get-categorias`).subscribe({
       next: (response) => {
         this.categorias = response.categorias;
       },

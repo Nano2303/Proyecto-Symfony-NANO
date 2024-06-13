@@ -5,6 +5,7 @@ import { CartService } from 'src/app/services/cart.service';
 import { Subscription, forkJoin } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
 import { ICreateOrderRequest, IPayPalConfig } from 'ngx-paypal';
+import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-cart',
@@ -21,6 +22,7 @@ export class CartComponent implements OnInit, OnDestroy {
     'total',
     'action',
   ];
+  apiUrl=environment.apiUrl;
   dataSource: CartItem[] = [];
   cartSubscription: Subscription | undefined;
   public payPalConfig?: IPayPalConfig;
@@ -108,7 +110,7 @@ export class CartComponent implements OnInit, OnDestroy {
 
   onCheckout(): void {
     const addProductObservables = this.cart.items.map(item => {
-      return this.http.post('http://localhost:8000/carrito/agregar-producto', {
+      return this.http.post(`${this.apiUrl}/carrito/agregar-producto`, {
         productos_id: item.id,
         cantidad: item.quantity
       }, {
@@ -125,7 +127,7 @@ export class CartComponent implements OnInit, OnDestroy {
         console.log('Productos añadidos al carrito:', responses);
 
         // Llama al endpoint para crear la orden
-        this.http.post('http://localhost:8000/crear-orden', null, {
+        this.http.post(`${this.apiUrl}/crear-orden`, null, {
           headers: new HttpHeaders({
             'Content-Type': 'application/json'
           }),
