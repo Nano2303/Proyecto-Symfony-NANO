@@ -2,12 +2,19 @@
 
 use App\Kernel;
 
-// Configuración CORS
-header("Access-Control-Allow-Origin: http://localhost:4200");
+// Definir orígenes permitidos
+$allowedOrigins = ['http://localhost:4200', 'http://194.164.170.132'];
+
+// Configuración CORS dinámica
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+} else {
+    header("Access-Control-Allow-Origin: null");
+}
+
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT, PATCH");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-
 
 // Manejar solicitudes OPTIONS
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
