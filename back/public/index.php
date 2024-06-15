@@ -3,7 +3,7 @@
 use App\Kernel;
 
 // Definir orígenes permitidos
-$allowedOrigins = ['http://localhost:4200', 'http://194.164.170.132', 'www.synonym-shop.es','synonym-shop.es','www.synonym-shop.com','synonym-shop.com','www.synonym-shop.eu','synonym-shop.eu',];
+$allowedOrigins = ['http://localhost:4200', 'http://194.164.170.132', 'http://www.synonym-shop.es','http://synonym-shop.es','http://www.synonym-shop.com','http://synonym-shop.com','http://www.synonym-shop.eu','http://synonym-shop.eu',];
 
 // Configuración CORS dinámica
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
