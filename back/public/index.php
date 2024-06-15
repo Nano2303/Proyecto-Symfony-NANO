@@ -14,14 +14,18 @@ $allowedOrigins = [
     'http://synonym-shop.eu',
 ];
 
+// Obtener el dominio desde el origen
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
 // Configuración CORS dinámica
-if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
     header("Access-Control-Allow-Credentials: true");
     header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT, PATCH");
     header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 } else {
     header("Access-Control-Allow-Origin: null");
+    header("Access-Control-Allow-Credentials: false");
 }
 
 // Manejar solicitudes OPTIONS
@@ -30,27 +34,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-// Configuración de cookies de sesión
-if (isset($_SERVER['HTTP_HOST'])) {
-    $domain = $_SERVER['HTTP_HOST'];
-
-    // Detectar si es una IP o un dominio
-    if (filter_var($domain, FILTER_VALIDATE_IP)) {
-        $cookieDomain = ''; // No se especifica dominio para la IP pública
-    } else {
-        // Ajustar el dominio para permitir cookies en todos los subdominios del TLD
-        // Ejemplo: si el dominio es 'www.synonym-shop.com', el resultado será '.synonym-shop.com'
-        $parts = explode('.', $domain);
-        $cookieDomain = (count($parts) > 2) ? '.' . implode('.', array_slice($parts, -2)) : '.' . $domain;
-    }
-
-    // Configurar la cookie de sesión
-    ini_set('session.cookie_domain', $cookieDomain);
+// Iniciar sesión solo si el origen es permitido
+if (in_array($origin, $allowedOrigins)) {
+    // Asegurarse de que las sesiones se configuren con el dominio adecuado
+    session_set_cookie_params([
+        'lifetime' => 0, // La duración de la sesión, 0 para hasta que se cierre el navegador
+        'path' => '/', // Ruta válida para la cookie de sesión
+        'domain' => parse_url($origin, PHP_URL_HOST), // Dominio para la cookie de sesión
+        'secure' => isset($_SERVER['HTTPS']), // Solo permitir la cookie en conexiones HTTPS
+        'httponly' => true, // Solo accesible por HTTP, no JavaScript
+        'samesite' => 'Lax' // Política de SameSite
+    ]);
+    session_start();
 }
-
-// Configurar la cookie de sesión
-ini_set('session.cookie_secure', '0'); // Ajustar a '1' si usas HTTPS, '0' si usas HTTP
-ini_set('session.cookie_samesite', 'None'); // Permitir envío entre dominios
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
