@@ -31,26 +31,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 // Configuración de cookies de sesión
-// Establecer el dominio de la cookie para permitir múltiples TLDs
 if (isset($_SERVER['HTTP_HOST'])) {
     $domain = $_SERVER['HTTP_HOST'];
+
+    // Ajustar el dominio de la cookie para permitir múltiples TLDs y IP pública
     if (filter_var($domain, FILTER_VALIDATE_IP)) {
-        $cookieDomain = false; // No se especifica dominio para las IPs
+        $cookieDomain = ''; // No se especifica dominio para la IP pública
     } else {
         // Ajustar el dominio para permitir cookies en todos los subdominios del TLD
-        if (preg_match('/\.([^.]+\.[a-z]{2,6})$/i', $domain, $matches)) {
-            $cookieDomain = '.' . $matches[1];
-        } else {
-            $cookieDomain = '.' . $domain; // Usar el dominio actual si no es un subdominio
-        }
+        $cookieDomain = '.' . implode('.', array_slice(explode('.', $domain), -2));
     }
 
-    // Configurar la cookie de sesión
     ini_set('session.cookie_domain', $cookieDomain);
 }
 
-// Asegurarse de que las cookies se envíen sólo a través de HTTPS si está habilitado
-ini_set('session.cookie_secure', '1'); // Ajustar a '1' para HTTPS, '0' para HTTP
+// Asegurarse de que las cookies se envíen solo a través de HTTPS si está habilitado
+ini_set('session.cookie_secure', '0'); // '1' para HTTPS, '0' para HTTP
 ini_set('session.cookie_samesite', 'None'); // Permitir envío entre dominios
 
 require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
