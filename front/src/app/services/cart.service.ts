@@ -7,7 +7,7 @@ import { Cart, CartItem } from '../models/cart.model';
   providedIn: 'root',
 })
 export class CartService {
-  cart = new BehaviorSubject<Cart>({ items: [] });
+  cart = new BehaviorSubject<Cart>({ items: this.loadCart() }); // Cargar carrito desde localStorage al iniciar
 
   constructor(private _snackBar: MatSnackBar) {}
 
@@ -20,11 +20,8 @@ export class CartService {
     } else {
       items.push(item);
     }
-    console.log('Updated cart items:', items);
-    this.cart.next({ items });
-    this._snackBar.open('1 item added to cart.', 'Ok', { duration: 3000 });
-
-
+    this.updateCart(items);
+    this._snackBar.open('1 Producto añadido al carrito.', 'Ok', { duration: 3000 });
   }
 
   removeFromCart(item: CartItem, updateCart = true): CartItem[] {
@@ -33,8 +30,8 @@ export class CartService {
     );
 
     if (updateCart) {
-      this.cart.next({ items: filteredItems });
-      this._snackBar.open('1 item removed from cart.', 'Ok', {
+      this.updateCart(filteredItems);
+      this._snackBar.open('1 Producto eliminado del carrito.', 'Ok', {
         duration: 3000,
       });
     }
@@ -60,15 +57,15 @@ export class CartService {
       filteredItems = this.removeFromCart(itemForRemoval, false);
     }
 
-    this.cart.next({ items: filteredItems });
-    this._snackBar.open('1 item removed from cart.', 'Ok', {
+    this.updateCart(filteredItems);
+    this._snackBar.open('1 Producto eliminado del carrito.', 'Ok', {
       duration: 3000,
     });
   }
 
   clearCart(): void {
-    this.cart.next({ items: [] });
-    this._snackBar.open('Cart is cleared.', 'Ok', {
+    this.updateCart([]);
+    this._snackBar.open('Carrito vacio.', 'Ok', {
       duration: 3000,
     });
   }
@@ -77,5 +74,20 @@ export class CartService {
     return items
       .map((item) => item.price * item.quantity)
       .reduce((prev, current) => prev + current, 0);
+  }
+
+  private updateCart(items: CartItem[]): void {
+    const newCart: Cart = { items: items };
+    this.cart.next(newCart);
+    this.saveCart(newCart);
+  }
+
+  private saveCart(cart: Cart): void {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+
+  private loadCart(): CartItem[] {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart).items : [];
   }
 }

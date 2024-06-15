@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RecoverPassService } from 'src/app/services/recoverpass/recover-pass.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-recover-pass',
@@ -14,7 +16,10 @@ export class RecoverPassComponent {
   successMessage: string | null = null;
   error: string | null = null;
 
-  constructor(private fb: FormBuilder, private recoverPassService: RecoverPassService) {
+  roleUser = localStorage.getItem('user_role')? localStorage.getItem('user_role') : null;
+
+
+  constructor(private fb: FormBuilder, private recoverPassService: RecoverPassService,private router:Router) {
     this.recoverPassForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
@@ -23,6 +28,12 @@ export class RecoverPassComponent {
       password: ['', Validators.required],
       repeat_password: ['', Validators.required]
     });
+  }
+
+  ngOnInit(): void {
+    if(this.roleUser){
+      this.router.navigate(['/home']);
+    }
   }
 
   onSubmitEmail() {
@@ -58,6 +69,17 @@ export class RecoverPassComponent {
           console.log('Respuesta del backend:', response); // Verificar respuesta del backend
           this.successMessage = 'Contraseña cambiada exitosamente';
           this.error = null;
+
+            Swal.fire({
+              title: '¡Contraseña cambiada con éxito!',
+              timer: 3000, 
+              timerProgressBar: true, 
+              willClose: () => {
+               
+                this.router.navigate(['/login']);
+              }
+            });
+
         },
         (error: any) => {
           console.error('Error al cambiar la contraseña', error); // Verificar error

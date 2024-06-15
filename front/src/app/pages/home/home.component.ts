@@ -34,6 +34,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (categoryId) {
         this.category = categoryId;
         this.getProductsByCategory(this.category);
+      }else{
+        this.getProducts();
       }
     });
   }

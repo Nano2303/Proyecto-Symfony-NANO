@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Route, Router } from '@angular/router';
 import { OrdenesService } from 'src/app/services/historial-pedidos/ordenes-service.service';
 
 @Component({
@@ -9,14 +10,19 @@ import { OrdenesService } from 'src/app/services/historial-pedidos/ordenes-servi
 export class HistorialPedidosComponent implements OnInit {
 
   ordenes: any[] = [];
+  roleUser = localStorage.getItem('user_role') == "ROLE_USER" ? localStorage.getItem('user_role') : null;
 
-  constructor(private ordenesService: OrdenesService) { }
+  constructor(private ordenesService: OrdenesService,private router: Router) { }
 
   ngOnInit(): void {
-    this.ordenesService.getOrdenes().subscribe(ordenes => {
-      this.ordenes = ordenes.sort((a, b) => b.id - a.id);
-      this.cargarImagenesProductos();
-    });
+    if(this.roleUser != null && this.roleUser != 'ROLE_ADMIN'){
+      this.ordenesService.getOrdenes().subscribe(ordenes => {
+        this.ordenes = ordenes.sort((a, b) => b.id - a.id);
+        this.cargarImagenesProductos();
+      });
+    }else{
+      this.router.navigate(['/home']);
+    }
     
   }
 

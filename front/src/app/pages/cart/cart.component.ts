@@ -1,12 +1,12 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Cart, CartItem } from 'src/app/models/cart.model';
 import { CartService } from 'src/app/services/cart.service';
 import { Subscription, forkJoin } from 'rxjs';
-import { HttpHeaders } from '@angular/common/http';
 import { ICreateOrderRequest, IPayPalConfig } from 'ngx-paypal';
 import { environment } from 'src/environments/environment.prod';
-
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
@@ -28,16 +28,29 @@ export class CartComponent implements OnInit, OnDestroy {
   public payPalConfig?: IPayPalConfig;
   estadoSesion = false;
 
-  constructor(private cartService: CartService, private http: HttpClient) { }
+  constructor(private cartService: CartService, private http: HttpClient,private router: Router) { }
 
   ngOnInit(): void {
     this.estadoSesion = this.isLoggedIn();
     this.initConfig();
+    this.loadCart(); // Cargar carrito desde localStorage
     this.cartSubscription = this.cartService.cart.subscribe((_cart: Cart) => {
       this.cart = _cart;
       this.dataSource = _cart.items;
-     
     });
+  }
+
+  private loadCart(): void {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      this.cart = JSON.parse(savedCart);
+      this.dataSource = this.cart.items;
+    } else {
+      this.cartSubscription = this.cartService.cart.subscribe((_cart: Cart) => {
+        this.cart = _cart;
+        this.dataSource = _cart.items;
+      });
+    }
   }
 
   private initConfig(): void {
@@ -53,6 +66,17 @@ export class CartComponent implements OnInit, OnDestroy {
           console.log('Transaction completed:', details);
           this.onCheckout(); // Llamada a onCheckout después de que la transacción sea aprobada
           this.onClearCart();
+          
+           Swal.fire({
+            title: 'Pedido realizado',
+            text: 'Tu pedido ha sido realizado con éxito',
+            icon: 'success',
+            confirmButtonText: 'Aceptar'
+          }).then(() => {
+            
+            this.router.navigate(['/orders']);
+          });
+
         });
       },
       onError: err => {
@@ -121,25 +145,20 @@ export class CartComponent implements OnInit, OnDestroy {
       });
     });
 
-    // Usa forkJoin para esperar a que todas las llamadas a agregar producto se completen
     forkJoin(addProductObservables).subscribe(
       responses => {
         console.log('Productos añadidos al carrito:', responses);
 
-        // Llama al endpoint para crear la orden
         this.http.post(`${this.apiUrl}/crear-orden`, null, {
           headers: new HttpHeaders({
             'Content-Type': 'application/json'
           }),
-          withCredentials: true, // Asegúrate de enviar credenciales
-          responseType: 'text' // Espera una respuesta en texto plano
+          withCredentials: true,
+          responseType: 'text'
         })
         .subscribe(
           (response: any) => {
             console.log('Orden creada:', response);
-
-            // Redirige a la página de confirmación de pago o realiza otra acción necesaria
-            // Ejemplo de redirección:
           },
           error => {
             console.error('Error al crear la orden:', error);

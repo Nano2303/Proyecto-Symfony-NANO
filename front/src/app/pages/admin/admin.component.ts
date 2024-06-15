@@ -1,6 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment.prod';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
@@ -29,9 +31,12 @@ export class AdminComponent {
   productoIdEliminar: number | null = null;
   apiUrl=environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  roleAdmin = localStorage.getItem('user_role') == "ROLE_ADMIN" ? localStorage.getItem('user_role') : null;
+
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
+    if(this.roleAdmin == null) this.router.navigate(['/home']);
     this.http.get<any>(`${this.apiUrl}/get-categorias`).subscribe(
       response => {
         this.categorias = response.categorias;
@@ -52,9 +57,22 @@ export class AdminComponent {
     this.http.post<any>(`${this.apiUrl}/crear-categoria`, categoria, {withCredentials: true}).subscribe(
       response => {
         console.log('Categoría creada exitosamente:', response);
+        Swal.fire({
+          icon: 'success',
+          title: 'Categoría creada',
+          text: 'La categoría se ha creado exitosamente.',
+          confirmButtonText: 'Aceptar'
+        });
+        this.router.navigate(['/admin'])
       },
       error => {
         console.error('Error al crear categoría:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al crear la categoría.',
+          confirmButtonText: 'Aceptar'
+        });
       }
     );
   }
@@ -78,9 +96,22 @@ export class AdminComponent {
       this.http.post<any>(`${this.apiUrl}/file/upload`, formData, {withCredentials: true}).subscribe(
         response => {
           this.enviarProducto();
+          Swal.fire({
+            icon: 'success',
+            title: 'Producto creado',
+            text: 'El producto se ha creado exitosamente.',
+            confirmButtonText: 'Aceptar'
+          });
+          this.router.navigate(['/admin'])
         },
         error => {
           console.error('Error al subir la imagen:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un error al crear el producto.',
+            confirmButtonText: 'Aceptar'
+          });
         }
       );
     } else {
@@ -119,9 +150,21 @@ export class AdminComponent {
     this.http.patch<any>(`${this.apiUrl}/reponer_productos`, reponerData, {withCredentials : true}).subscribe(
       response => {
         console.log('Stock repuesto exitosamente:', response);
+        Swal.fire({
+          icon: 'success',
+          title: 'Reposicion de stock OK',
+          confirmButtonText: 'Aceptar'
+        });
+        this.router.navigate(['/admin'])
       },
       error => {
-        console.error('Error al reponer stock:', error);
+        console.error('Error al reponer producto:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al reponer stock.',
+          confirmButtonText: 'Aceptar'
+        });
       }
     );
   }
@@ -134,9 +177,21 @@ export class AdminComponent {
     this.http.patch<any>(`${this.apiUrl}/delete-user`, usuario, {withCredentials: true}).subscribe(
       response => {
         console.log('Usuario borrado exitosamente:', response);
+        Swal.fire({
+          icon: 'success',
+          title: 'Usuario borrado con exito!',
+          confirmButtonText: 'Aceptar'
+        });
+        this.router.navigate(['/admin'])
       },
       error => {
         console.error('Error al borrar usuario:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al intentar borrar al usuario.',
+          confirmButtonText: 'Aceptar'
+        });
       }
     );
   }
@@ -146,7 +201,6 @@ export class AdminComponent {
       console.error('No se proporcionó el ID del producto a eliminar');
       return;
     }
-  
     const producto = { id: this.productoIdEliminar };
   
     this.http.request<any>('delete', `${this.apiUrl}/borrar_producto`, {
@@ -155,9 +209,21 @@ export class AdminComponent {
     }).subscribe(
       response => {
         console.log('Producto borrado exitosamente:', response);
+        Swal.fire({
+          icon: 'success',
+          title: 'Producto borrado con exito!',
+          confirmButtonText: 'Aceptar'
+        });
+        this.router.navigate(['/admin'])
       },
       error => {
-        console.error('Error al borrar producto:', error);
+        console.error('Error al borrer producto:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al intentar borrar el producto.',
+          confirmButtonText: 'Aceptar'
+        });
       }
     );
   }

@@ -68,10 +68,19 @@
           </button>
         </td>
         <td mat-footer-cell *matFooterCellDef>
-          <div *ngIf="estadoSesion && cart.items.length > 0" class="paypal-container" >
+        @if (estadoSesion && cart.items.length > 0) {
+          
+          <div class="paypal-container" >
             <ngx-paypal [config]="payPalConfig"></ngx-paypal>
         
           </div>
+        }@else if (!estadoSesion && cart.items.length > 0){
+          <div>
+            <a routerLink="/login" class="text-blue-600 hover:text-blue-800 text-sm sm:text-base md:text-lg lg:text-l">
+              ¡¡Para poder comprar,<br> Inicia sesión aquí!!
+            </a>
+          </div>
+        }
         </td>
       </ng-container>
   

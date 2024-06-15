@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RegisterService } from 'src/app/services/register/register-service.service';
 
 @Component({
@@ -12,7 +13,10 @@ export class RegisterComponent {
   errors: string | null = null;
   successMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private registerService: RegisterService) {
+  roleUser = localStorage.getItem('user_role')? localStorage.getItem('user_role') : null;
+
+
+  constructor(private fb: FormBuilder, private registerService: RegisterService, private router:Router) {
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -25,6 +29,12 @@ export class RegisterComponent {
       codigo_postal: ['', Validators.required],
       pais: ['', Validators.required]
     });
+  }
+
+  ngOnInit(): void {
+    if(this.roleUser){
+      this.router.navigate(['/home']);
+    }
   }
 
   onSubmit() {

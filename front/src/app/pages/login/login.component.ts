@@ -16,6 +16,9 @@ export class LoginComponent implements OnInit {
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
+  
+  roleUser = localStorage.getItem('user_role')? localStorage.getItem('user_role') : null;
+
 
   constructor(
     private formBuilder: FormBuilder, 
@@ -23,7 +26,11 @@ export class LoginComponent implements OnInit {
     private loginService: LoginService
   ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if(this.roleUser){
+      this.router.navigate(['/home']);
+    }
+  }
 
   login(): void {
     if (this.loginForm.valid) {

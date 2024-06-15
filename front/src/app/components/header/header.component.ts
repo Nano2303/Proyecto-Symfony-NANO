@@ -20,6 +20,7 @@ export class HeaderComponent implements OnInit {
   menuOpen = false;
   categorias: any[] = [];
   apiUrl = environment.apiUrl;
+  roleAdmin = localStorage.getItem('user_role') == "ROLE_ADMIN" ? localStorage.getItem('user_role') : null;
 
   @Input()
   get cart(): Cart {

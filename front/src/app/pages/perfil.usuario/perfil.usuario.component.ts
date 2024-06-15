@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PerfilUsuarioService } from '../../services/perfil-usuario/perfil-usuario.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-perfil-usuario',
@@ -23,10 +24,16 @@ export class PerfilUsuarioComponent implements OnInit {
   editMode = false;
   originalData: any = {};
 
-  constructor(private perfilUsuarioService: PerfilUsuarioService) { }
+  roleUser = localStorage.getItem('user_role') == "ROLE_USER" ? localStorage.getItem('user_role') : null;
+
+  constructor(private perfilUsuarioService: PerfilUsuarioService, private router: Router) { }
 
   ngOnInit(): void {
-    this.getInfoUsuarioActual();
+    if(this.roleUser != null && this.roleUser != "ROLE_ADMIN"){
+      this.getInfoUsuarioActual();
+    }else{
+      this.router.navigate(['/home']);
+    }
   }
 
   getInfoUsuarioActual(): void {
