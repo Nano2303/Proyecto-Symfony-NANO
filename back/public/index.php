@@ -3,7 +3,7 @@
 use App\Kernel;
 
 // Definir orígenes permitidos
-$allowedOrigins = ['http://localhost:4200', 'http://194.164.170.132'];
+$allowedOrigins = ['http://localhost:4200', 'http://194.164.170.132', 'www.symfony-shop.es','symfony-shop.es','www.symfony-shop.com','symfony-shop.com','www.symfony-shop.eu','symfony-shop.eu',];
 
 // Configuración CORS dinámica
 if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
