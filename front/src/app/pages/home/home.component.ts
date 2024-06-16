@@ -64,11 +64,22 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.productsSubscription = this.storeService
       .getAllProducts()
       .subscribe((_products) => {
-        this.products = this.filterAndSortProducts(_products);
-        this.categories = this.getCategories(_products);
+        // Mezclar aleatoriamente los productos
+        this.products = this.shuffleArray(_products);
+        this.categories = this.getCategories(this.products);
       });
   }
 
+shuffleArray(array: any[]): any[] {
+    // Implementación del algoritmo de Fisher-Yates para mezclar aleatoriamente el array
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  
   getProductsByCategory(categoryId: string): void {
     this.productsSubscription = this.storeService
       .getProductsByCategory(categoryId)
