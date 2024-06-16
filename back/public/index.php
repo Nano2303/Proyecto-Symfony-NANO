@@ -38,25 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 error_log("HTTP_ORIGIN: $origin");
 error_log("Cookies de solicitud: " . json_encode($_COOKIE));
 
-// Configuración de cookies de sesión
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => '.synonym-shop.com', // Cambia esto para que sea adecuado a tu dominio principal
-    'secure' => isset($_SERVER['HTTPS']),
-    'httponly' => true,
-    'samesite' => 'None' // Asegúrate de que esto sea 'None' para permitir cross-origin
-]);
-
-// Iniciar la sesión si no está ya iniciada
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Depuración: Verificar la sesión
-error_log("Session ID: " . session_id());
-error_log("Session Data: " . json_encode($_SESSION));
-
 // Cargar el autoload y el kernel de la aplicación
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
