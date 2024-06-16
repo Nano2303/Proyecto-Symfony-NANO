@@ -14,18 +14,19 @@ $allowedOrigins = [
     'http://synonym-shop.eu',
 ];
 
-// Obtener el origen de la solicitud
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-
 // Configuración CORS dinámica
-if (in_array($origin, $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: $origin");
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
     header("Access-Control-Allow-Credentials: true");
     header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT, PATCH");
     header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+    // Depuración para verificar el origen permitido
+    error_log("Allowed Origin: {$_SERVER['HTTP_ORIGIN']}");
 } else {
     header("Access-Control-Allow-Origin: null");
     header("Access-Control-Allow-Credentials: false");
+    // Depuración para verificar el origen no permitido
+    error_log("Blocked Origin: {$_SERVER['HTTP_ORIGIN']}");
 }
 
 // Manejar solicitudes OPTIONS (preflight requests)
@@ -34,10 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-// Depuración: Verificar el origen y las cookies
-error_log("HTTP_ORIGIN: $origin");
-error_log("Cookies de solicitud: " . json_encode($_COOKIE));
-
 // Cargar el autoload y el kernel de la aplicación
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
@@ -45,4 +42,3 @@ return function (array $context) {
     return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
 };
 
-?>
