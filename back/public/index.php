@@ -34,9 +34,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-// Código de depuración para verificar el origen y las cookies
+// Depuración: Log para verificar el origen y las cookies
 error_log("HTTP_ORIGIN: $origin");
 error_log("Cookies de solicitud: " . json_encode($_COOKIE));
+
+// Configuración de cookies de sesión para cross-origin
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '.synonym-shop.com', // Ajusta este valor según tu dominio principal, con punto para subdominios
+    'secure' => isset($_SERVER['HTTPS']), // true si usas HTTPS
+    'httponly' => true,
+    'samesite' => 'None' // 'None' para permitir cross-origin
+]);
+
+// Iniciar la sesión. Asegúrate de que no haya otro código que inicie la sesión antes.
+session_start();
+
+// Código para depuración de sesión
+error_log("Session ID: " . session_id());
+error_log("Session Data: " . json_encode($_SESSION));
 
 // Cargar el autoload y el kernel de la aplicación
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
@@ -44,3 +61,5 @@ require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 return function (array $context) {
     return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
 };
+
+?>
