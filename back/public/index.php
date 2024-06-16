@@ -28,30 +28,32 @@ if (in_array($origin, $allowedOrigins)) {
     header("Access-Control-Allow-Credentials: false");
 }
 
-// Manejar solicitudes OPTIONS
+// Manejar solicitudes OPTIONS (preflight requests)
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(204);
     exit;
 }
 
-// Depuración: Log para verificar el origen y las cookies
+// Depuración: Verificar el origen y las cookies
 error_log("HTTP_ORIGIN: $origin");
 error_log("Cookies de solicitud: " . json_encode($_COOKIE));
 
-// Configuración de cookies de sesión para cross-origin
+// Configuración de cookies de sesión
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
-    'domain' => '.synonym-shop.com', // Ajusta este valor según tu dominio principal, con punto para subdominios
-    'secure' => isset($_SERVER['HTTPS']), // true si usas HTTPS
+    'domain' => '.synonym-shop.com', // Cambia esto para que sea adecuado a tu dominio principal
+    'secure' => isset($_SERVER['HTTPS']),
     'httponly' => true,
-    'samesite' => 'None' // 'None' para permitir cross-origin
+    'samesite' => 'None' // Asegúrate de que esto sea 'None' para permitir cross-origin
 ]);
 
-// Iniciar la sesión. Asegúrate de que no haya otro código que inicie la sesión antes.
-session_start();
+// Iniciar la sesión si no está ya iniciada
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-// Código para depuración de sesión
+// Depuración: Verificar la sesión
 error_log("Session ID: " . session_id());
 error_log("Session Data: " . json_encode($_SESSION));
 
