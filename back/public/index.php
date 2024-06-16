@@ -14,7 +14,7 @@ $allowedOrigins = [
     'http://synonym-shop.eu',
 ];
 
-// Obtener el dominio desde el origen
+// Obtener el origen de la solicitud
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
 // Configuración CORS dinámica
@@ -32,20 +32,6 @@ if (in_array($origin, $allowedOrigins)) {
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(204);
     exit;
-}
-
-// Iniciar sesión solo si el origen es permitido
-if (in_array($origin, $allowedOrigins)) {
-    // Asegurarse de que las sesiones se configuren con el dominio adecuado
-    session_set_cookie_params([
-        'lifetime' => 0, // La duración de la sesión, 0 para hasta que se cierre el navegador
-        'path' => '/', // Ruta válida para la cookie de sesión
-        'domain' => parse_url($origin, PHP_URL_HOST), // Dominio para la cookie de sesión
-        'secure' => isset($_SERVER['HTTPS']), // Solo permitir la cookie en conexiones HTTPS
-        'httponly' => true, // Solo accesible por HTTP, no JavaScript
-        'samesite' => 'Lax' // Política de SameSite
-    ]);
-    session_start();
 }
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
