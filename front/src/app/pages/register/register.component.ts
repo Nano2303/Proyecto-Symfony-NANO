@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RegisterService } from 'src/app/services/register/register-service.service';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -61,6 +61,15 @@ export class RegisterComponent {
           this.errors = null;
           this.successMessage = 'Usuario registrado exitosamente';
           console.log(response);
+          Swal.fire({
+            title: '¡Contraseña cambiada con éxito!',
+            timer: 3000, 
+            timerProgressBar: true, 
+            willClose: () => {
+             
+              this.router.navigate(['/login']);
+            }
+          });
         },
         (error: any) => {
           this.errors = error.error.errors || 'Ocurrió un error';
