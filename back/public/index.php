@@ -34,10 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-// Código para depuración adicional
-error_log("Origen recibido: $origin");
-error_log("Allow-Credentials: " . (in_array($origin, $allowedOrigins) ? "true" : "false"));
+// Código de depuración para verificar el origen
+error_log("HTTP_ORIGIN: $origin");
 
+// Cargar el autoload y el kernel de la aplicación
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
 return function (array $context) {
