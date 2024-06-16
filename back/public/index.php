@@ -34,8 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-// Código de depuración para verificar el origen
+// Código de depuración para verificar el origen y las cookies
 error_log("HTTP_ORIGIN: $origin");
+error_log("Cookies de solicitud: " . json_encode($_COOKIE));
 
 // Cargar el autoload y el kernel de la aplicación
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
