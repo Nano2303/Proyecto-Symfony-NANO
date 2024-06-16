@@ -19,7 +19,7 @@ if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
     header("Access-Control-Allow-Credentials: true");
     header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT, PATCH");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Set-Cookie");
     // Depuración para verificar el origen permitido
     error_log("Allowed Origin: {$_SERVER['HTTP_ORIGIN']}");
 } else {
@@ -35,10 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
+// Configuración de sesiones
+ini_set('session.cookie_samesite', 'None');  // Permitir el uso de cookies en contextos CORS
+ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) ? '1' : '0');  // Usar cookies seguras si se accede por HTTPS
+ini_set('session.cookie_domain', '.synonym-shop.com');  // Permitir la cookie en todos los subdominios
+
+// Iniciar la sesión
+session_start();
+
 // Cargar el autoload y el kernel de la aplicación
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
 return function (array $context) {
     return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
 };
-
